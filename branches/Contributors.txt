@@ -1,0 +1,8 @@
+RPISEC would like to thank the following individuals for their help developing the cracker.
+
+NAME                    CONTRIBUTION
+------------------------------------------------------------------------------------------------
+Govostes, Ryan    :     bug fixes
+Kubiak, Radek     :     setup script for controller
+Sanchez, Jason    :     time on GPU cluster
+Zonenberg, Andrew :     initial design and implementation, CUDA MD5/SHA1/md5crypt, amd64 MD5

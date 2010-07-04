@@ -1,0 +1,43 @@
+# Makefile for hw2_smp
+
+###############################################################################
+# System configuration
+SHELL = /bin/sh
+CC = mpixlcxx
+.SUFFIXES:
+.SUFFIXES: .cpp .h .o
+
+###############################################################################
+# Configurable tool flags
+CFLAGS = -O3 -g -DUNIX
+
+###############################################################################
+# Required libraries
+LIBS = -lm
+
+###############################################################################
+# Sources and outputs
+ALL_CFLAGS = -I. $(CFLAGS)
+ALL_LDFLAGS = $(LDFLAGS)
+
+CPPFILES = benchmark.cpp MD5.cpp
+HFILES = benchmark.h
+OBJS = benchmark.o MD5.o
+OUTFILE = benchmark-md5
+
+###############################################################################
+# Targets
+
+all: $(OUTFILE)
+
+#Our actual executable
+$(OUTFILE): $(OBJS)
+	$(CC) $(OBJS) $(ALL_CFLAGS) $(LIBS) -o $(OUTFILE)
+
+#Rules for compiling various types of source	
+.cpp.o: $(CPPFILES) $(HFILES)
+	$(CC) -c $(ALL_CFLAGS) $< -o $@
+	
+#Simple - delete all of the temp files
+clean:
+	rm -rf *.o $(OUTFILE)
