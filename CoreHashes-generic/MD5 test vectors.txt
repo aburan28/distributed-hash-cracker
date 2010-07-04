@@ -1,0 +1,75 @@
+These are a couple of very detailed test vectors derived from single-stepping through 
+a known-good implementation. By revealing errors before the avalanche effect obscures
+their origin, debugging can be made a bit easier.
+
+
+Input: zero-length string
+
+End of first four operations:
+a = (for some reason this data was accidentally omitted - it will be added soon)
+b = 0x????????
+c = 0x????????
+d = 0x????????
+
+
+End of round 1:
+a = 0xf56c7cf1
+b = 0xd6819c6a
+c = 0x5aa53f75
+d = 0x374943a7
+
+End of round 2:
+a = 0x13707036
+b = 0xa2205f1f
+c = 0x1c31c384
+d = 0xae7813db
+
+End of round 3:
+a = 0x3f55edfd
+b = 0xca7d2dbd
+c = 0x68d84ea2
+d = 0x22a31f54
+
+End of round 4:
+a = 0x7246fad3
+b = 0x14e45506
+c = 0xff4ea3eb
+d = 0x6e10a476
+
+Output: d41d8cd98f00b204e9800998ecf8427e
+
+=====================================================
+
+Input: a
+
+End of first four operations:
+a = 0xa56017f4
+b = 0x607d9686
+c = 0xe65857a7
+d = 0xf2d58361
+
+End of round 1:
+a = 0x44244cf8
+b = 0xf01e3ce2
+c = 0x6360a45f
+d = 0xd0fe9b27
+
+End of round 2:
+a = 0x93842e98
+b = 0x3745961f
+c = 0x94a2ebee
+d = 0xc7043b64
+
+End of round 3:
+a = 0x0ac50e18
+b = 0x918f93bb
+c = 0x8a4a63f6
+d = 0x79ca7845
+
+End of round 4:
+a = 0x52309e0b
+b = 0xb8e94637
+c = 0x49dee633
+d = 0x50f422f3
+
+Output: 0cc175b9c0f1b6a831c399e269772661

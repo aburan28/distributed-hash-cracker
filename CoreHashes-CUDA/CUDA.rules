@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VisualStudioToolFile
+	Name="CUDA build"
+	Version="8.00"
+	>
+	<Rules>
+		<CustomBuildRule
+			Name="CUDACompiler"
+			DisplayName="NVIDIA CUDA compiler"
+			CommandLine="nvcc --host-compilation=c++ -c [inputs] -o &quot;$(IntDir)\$(InputName).obj&quot;"
+			Outputs="&quot;$(IntDir)\$(InputName).obj&quot;"
+			FileExtensions="*.cu"
+			ExecutionDescription="Compiling..."
+			>
+			<Properties>
+			</Properties>
+		</CustomBuildRule>
+	</Rules>
+</VisualStudioToolFile>
