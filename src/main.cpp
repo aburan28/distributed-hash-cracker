@@ -1,9 +1,8 @@
-<?php
 /******************************************************************************
 *                                                                             *
-* Distributed Hash Cracker v3.0                                               *
+* Distributed Hash Cracker v3.0 DEFCON EDITION                                *
 *                                                                             *
-* Copyright (c) 2009 RPISEC.                                                  *
+* Copyright (c) 2009-2010 RPISEC.                                             *
 * All rights reserved.                                                        *
 *                                                                             *
 * Redistribution and use in source and binary forms, with or without modifi-  *
@@ -33,80 +32,23 @@
 *                                                                             *
 *******************************************************************************/
 
-/*!
-	@file header.php
-	
-	@brief Common stuff used by both controller back-end and UI
+/**
+	@file main.cpp
+	@brief Entry point
  */
+ 
+#include <mpi.h>
+#include <stdio.h>
 
-mysql_connect($dbserver, $uname, $pass) or die('DB error');
-mysql_select_db($dbname) or die('DB error');
-
-$g_dberrors = true;		//TODO: turn off in release build
-$action = $_GET['action'];
-
-//TODO: implement login for hash submission
-
-//Expire all obsolete cracks
-$time = time();
-dbquery("UPDATE `cracks` SET `active` = '0' WHERE `active` = '1' AND `expiration` < '$time'");
-
-/*!
-	@brief Executes a database query
-	
-	If an error occurs, the script is terminated. If $g_dberrors is set to true, a detailed diagnostic message suitable for
-	debugging is displayed. If not, a generic "error" message is shown.
-	
-	@param $q The query to execute
-	
-	@return MySQL result set
- */
-function dbquery($q)
+int main(int argc, char* argv[])
 {
-	global $g_dberrors;
-	$r = mysql_query($q);
-	if($r)
-		return $r;
-	else if($g_dberrors)
-		die($q . "<br/>: " . mysql_error());
-	else
-		die("Error");
+	MPI_Init(&argc, &argv);
+	
+	int rank;
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	printf("Hai from %d\n", rank);
+	
+	MPI_Finalize();
+	
+	return 0;
 }
-
-/*!
-	@brief Renders the page given a template array
-	
-	This function loads the page template from data/template.html, applies template transformations using GetTemplatedPage(),
-	and prints the result.
-	
-	@param $tarr Parameter array
- */
-function RenderPage($tarr)
-{
-	echo GetTemplatedPage('data/template.html', $tarr);
-}
-
-/*!
-	@brief Applies template transformations to a file
-	
-	The file specified by $file is loaded and searched for HTML comments of the form <!-- [[x]] -->. All occurrences of them are
-	replaced by the string in $tarr['x'].
-	
-	@param $file Name of the template file
-	@param $tarr Parameter array
-	
-	@return The output string
- */
-function GetTemplatedPage($file, $tarr)
-{
-	//Get the page
-	$html = file_get_contents($file);
-	
-	//Templating
-	foreach($tarr as $id => $val)
-		$html = str_replace("<!-- [[$id]] -->", $val, $html);
-		
-	//and return
-	return $html;
-}
-?>
