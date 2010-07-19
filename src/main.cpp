@@ -48,7 +48,7 @@ void aligned_free(void* ptr);
 double GetTime(clockid_t id = CLOCK_REALTIME);
 double GetTimeResolution(clockid_t id = CLOCK_REALTIME);
 
-extern "C" int HashSearch(unsigned int* hash, unsigned int* list, int count, unsigned int* temp);
+extern "C" int HashSearch(unsigned int* hash, unsigned int* list, int count);
 
 void ComparisonPerformanceTest();
 
@@ -213,19 +213,17 @@ void ComparisonPerformanceTest()
 	last[1] = testhash[1] = 0xbaadc0de;
 	last[2] = testhash[2] = 0xf0000000;
 	last[3] = testhash[3] = 0x00c0ffee;
-	unsigned int* temp = static_cast<unsigned int*>(aligned_malloc(16));
 	
 	const int iters = 1000;
 	int ret = -1;
 	double start = GetTime();
 	for(int i=0; i<iters; i++)
-		ret = HashSearch(testhash, testlist, testcount, temp);
+		ret = HashSearch(testhash, testlist, testcount);
 	double dt = GetTime() - start;
 	double speed = (iters*testcount) / (1E9 * dt);
 	printf("Elapsed time for %d iterations: %.2f ms (%.2f GCmp/sec)\n", iters, 1000*dt, speed);
 	printf("index = %d\n", ret);
 	
-	aligned_free(temp);
 	aligned_free(testlist);
 	aligned_free(testhash);
 }
