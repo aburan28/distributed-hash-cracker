@@ -42,27 +42,23 @@ HashSearch:
 	mov		rcx, [rdi]			;r8, r9 = search hash
 	mov		r9, [rdi + 8]
 
-	mov		rax, rsi			;save orig list ptr
-	
-	sal		rdx, 4				;count*16 = max byte offset
-	add		rdx, rsi			;rdx = max offset
-	
+	xor		rax, rax
 .hashloop:
-	cmp		[rsi], rcx			;check first half
+	lea		r8, [rax*4]
+	lea		r8, [r8*4 + rsi]
+
+	cmp		[r8], rcx			;check first half
 	jne		.next				;if not found, skip
-	cmp		[rsi + 8], r9
+	cmp		[r8 + 8], r9
 	je		.hit
 
 .next:
-	add		rsi, 16				;go to next hash
-	cmp		rsi, rdx			;we done yet?
+	inc		eax
+	cmp		eax, edx
 	jl		.hashloop
 
 .miss:							;if no hit, fall through to here
 	mov		rax, -1
 	ret
 .hit:
-	sub		rsi, rax			;final pointer - offset
-	sar		rsi, 4				;divide by 16 to get index
-	mov		rax, rsi
 	ret
