@@ -36,14 +36,11 @@ bits		64
 section		.text
 default		rel
 
-;int HashSearch(unsigned int* hash /* rdi */, unsigned int* list /* rsi */, int count /* rdx */, unsigned int* temp /* rcx */);
+;int HashSearch(unsigned int* hash /* rdi */, unsigned int* list /* rsi */, int count /* rdx */);
 global HashSearch:function
 HashSearch:
-	push	r10
-	push	r11
-	
-	mov		r10, [rdi]			;r10, r11 = search hash
-	mov		r11, [rdi + 8]
+	mov		r8, [rdi]			;r8, r9 = search hash
+	mov		r9, [rdi + 8]
 
 	mov		rax, rsi			;save orig list ptr
 	
@@ -51,9 +48,9 @@ HashSearch:
 	add		rdx, rsi			;rdx = max offset
 	
 .hashloop:
-	cmp		[rsi], r10			;check first half
+	cmp		[rsi], r8			;check first half
 	jne		.next				;if not found, skip
-	cmp		[rsi + 8], r11
+	cmp		[rsi + 8], r9
 	je		.hit
 
 .next:
@@ -63,13 +60,9 @@ HashSearch:
 
 .miss:							;if no hit, fall through to here
 	mov		rax, -1
-	pop		r11
-	pop		r10
 	ret
 .hit:
 	sub		rsi, rax			;final pointer - offset
 	sar		rsi, 4				;divide by 16 to get index
 	mov		rax, rsi
-	pop		r11
-	pop		r10
 	ret
