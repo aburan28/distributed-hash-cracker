@@ -44,6 +44,12 @@
 
 void* aligned_malloc(size_t size);
 void aligned_free(void* ptr);
+double GetTime(clockid_t id = CLOCK_REALTIME);
+double GetTimeResolution(clockid_t id = CLOCK_REALTIME);
+
+int DoSearch(unsigned int* hash, unsigned int* list, int count);
+
+void ComparisonPerformanceTest();
 
 unsigned int* read_hashes(long* pLinecount, const char* fname, int rank);
 
@@ -60,9 +66,17 @@ int main(int argc, char* argv[])
 	const char* fname = "testvectors.txt";
 	int maxlength = 6;
 	
+	/*
+	printf("Resolution of CLOCK_REALTIME: %.7f ns\n", 1E9 * GetTimeResolution(CLOCK_REALTIME));
+	printf("Resolution of CLOCK_MONOTONIC: %.7f ns\n", 1E9 * GetTimeResolution(CLOCK_MONOTONIC));
+	printf("Resolution of CLOCK_PROCESS_CPUTIME_ID: %.7f ns\n", 1E9 * GetTimeResolution(CLOCK_PROCESS_CPUTIME_ID));
+	*/
+	
 	//Read input
 	long linecount = 0;
 	unsigned int* hashbuf = read_hashes(&linecount, fname, rank);
+
+	ComparisonPerformanceTest();
 	
 	//TODO: preprocess (subtract constants etc)
 	
@@ -138,7 +152,7 @@ unsigned int* read_hashes(long* pLinecount, const char* fname, int rank)
 	long linecount = ceil(static_cast<float>(count) / 33);
 	if(rank == 0)
 		printf("Reading %ld hashes from disk... ", linecount);
-	unsigned int* hashbuf = static_cast<unsigned int*>(aligned_malloc(count * 4));
+	unsigned int* hashbuf = static_cast<unsigned int*>(aligned_malloc(count * 16));
 	for(long i=0; i<linecount; i++)
 	{
 		unsigned int* base = hashbuf + (i*4);
@@ -160,4 +174,73 @@ unsigned int* read_hashes(long* pLinecount, const char* fname, int rank)
 	
 	*pLinecount = linecount;
 	return hashbuf;
+}
+
+/**
+	@brief Returns a time value, in milliseconds, suitable for performance profiling.
+ */
+double GetTime(clockid_t id)
+{
+	timespec t;
+	clock_gettime(id,&t);
+	double d = static_cast<double>(t.tv_nsec) / 1E9f;
+	d += t.tv_sec;
+	return d;
+}
+
+/**
+	@brief Get resolution of a clock
+ */
+double GetTimeResolution(clockid_t id)
+{
+	timespec t;
+	clock_getres(id,&t);
+	double d = static_cast<double>(t.tv_nsec) / 1E9f;
+	d += t.tv_sec;
+	return d;
+}
+
+void ComparisonPerformanceTest()
+{
+	//Allocate a bunch of test arrays
+	const int testcount = 10000;
+	unsigned int* testlist = static_cast<unsigned int*>(aligned_malloc(testcount * 16));
+	unsigned int* testhash = static_cast<unsigned int*>(aligned_malloc(16));
+	memset(testlist, 0, testcount*16);
+	unsigned int* last = testlist + (testcount-1)*4;
+	last[0] = testhash[0] = 0xdeadbeef;
+	last[1] = testhash[1] = 0xbaadc0de;
+	last[2] = testhash[2] = 0xf0000000;
+	last[3] = testhash[3] = 0x00c0ffee;
+	
+	const int iters = 1000;
+	int ret = -1;
+	double start = GetTime();
+	for(int i=0; i<iters; i++)
+		ret = DoSearch(testhash, testlist, testcount);
+	double dt = GetTime() - start;
+	double speed = (iters*testcount) / (1E9 * dt);
+	printf("Elapsed time for %d iterations: %.2f ms (%.2f GCmp/sec)\n", iters, 1000*dt, speed);
+	printf("index = %d\n", ret);
+	
+	aligned_free(testlist);
+	aligned_free(testhash);
+}
+
+int DoSearch(unsigned int* hash, unsigned int* list, int count)
+{
+	for(int i=0; i<count; i++)
+	{
+		unsigned int* row = list + (i*4);
+		if(hash[0] != row[0])
+			continue;
+		if(hash[1] != row[1])
+			continue;
+		if(hash[2] != row[2])
+			continue;
+		if(hash[3] != row[3])
+			continue;
+		return i;
+	}
+	return -1;
 }
