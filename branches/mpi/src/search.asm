@@ -42,20 +42,26 @@ HashSearch:
 	mov		rcx, [rdi]			;r8, r9 = search hash
 	mov		r9, [rdi + 8]
 
-	xor		rax, rax
+	mov		eax, edx			;count = upper bound
+	dec		eax
 .hashloop:
-	lea		r8, [rax*4]
-	lea		r8, [r8*4 + rsi]
+	lea		rdi, [rax*4]		;compute address
+	lea		rdi, [rdi*4 + rsi]
 
-	cmp		[r8], rcx			;check first half
+	cmp		[rdi], rcx			;check first half
 	jne		.next				;if not found, skip
-	cmp		[r8 + 8], r9
+	cmp		[rdi + 8], r9		;check second half
 	je		.hit
 
 .next:
-	inc		eax
-	cmp		eax, edx
-	jl		.hashloop
+	dec		eax
+	jnz		.hashloop
+	
+	;still have to test last iteration at this point
+	cmp		[rsi], rcx			;check first half
+	jne		.miss				;if not found, skip
+	cmp		[rsi + 8], r9		;check second half
+	je		.hit
 
 .miss:							;if no hit, fall through to here
 	mov		rax, -1

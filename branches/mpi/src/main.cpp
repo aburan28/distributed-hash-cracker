@@ -208,7 +208,7 @@ void ComparisonPerformanceTest()
 	unsigned int* testlist = static_cast<unsigned int*>(aligned_malloc(testcount * 16));
 	unsigned int* testhash = static_cast<unsigned int*>(aligned_malloc(16));
 	memset(testlist, 0, testcount*16);
-	unsigned int* last = testlist + (testcount-1)*4;
+	unsigned int* last = testlist + 4*(0);	//now doing end-to-beginning search
 	last[0] = testhash[0] = 0xdeadbeef;
 	last[1] = testhash[1] = 0xbaadc0de;
 	last[2] = testhash[2] = 0xf0000000;
