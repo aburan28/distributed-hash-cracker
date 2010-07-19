@@ -36,6 +36,9 @@ bits		64
 section		.text
 default		rel
 
+;%define takehint db 3eh
+;%define skiphint db 2eh
+
 ;int HashSearch(unsigned int* hash /* rdi */, unsigned int* list /* rsi */, int count /* rdx */);
 global HashSearch:function
 HashSearch:
