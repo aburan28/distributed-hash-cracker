@@ -35,3 +35,31 @@
 bits		64
 section		.text
 default		rel
+
+;int HashSearch(unsigned int* hash /* rdi */, unsigned int* list /* rsi */, int count /* rdx */, unsigned int* temp /* rcs */);
+global HashSearch:function
+HashSearch:
+	
+	movaps	xmm0, [rdi]			;xmm0 = search hash
+	xor		rax, rax
+	
+.hashloop:
+	lea		r8, [4*rax]			;offset in ints
+	movaps	xmm1, [rsi + 4*r8]	;offset in bytes
+	pcmpeqd	xmm1, xmm0			;xmm1 = 2x 64 bit value
+	
+	movaps	[rcx], xmm1			;copy to memory and process
+	mov r9, [rcx]
+	and r9, [rcx + 8]
+	not r9
+	cmp	r9,	0
+	je		.hit
+
+	inc		rax
+	cmp		rax, rdx			;we done yet?
+	jl		.hashloop
+
+.miss:							;if no hit, fall through to here
+	mov		rax, -1
+.hit:
+	ret
