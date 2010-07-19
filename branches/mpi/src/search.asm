@@ -39,25 +39,21 @@ default		rel
 ;int HashSearch(unsigned int* hash /* rdi */, unsigned int* list /* rsi */, int count /* rdx */, unsigned int* temp /* rcx */);
 global HashSearch:function
 HashSearch:
-	movaps	xmm0, [rdi]			;xmm0 = search hash
-	xor		r9, r9
-	not		r9
+	push	r10
+	push	r11
 	
+	mov		r10, [rdi]			;r10, r11 = search hash
+	mov		r11, [rdi + 8]
+
 	mov		rax, rsi			;save orig list ptr
 	
 	sal		rdx, 4				;count*16 = max byte offset
 	add		rdx, rsi			;rdx = max offset
 	
 .hashloop:
-	movaps	xmm1, [rsi]			;offset in bytes
-	pcmpeqd	xmm1, xmm0			;xmm1 = 2x 64 bit value
-	
-	movaps	[rcx], xmm1			;copy to memory and process
-	cmp		[rcx], r9
-	jne		.next
-	cmp		[rcx+8], r9
-	jne		.next
-	
+	cmp		[rsi], r10			;check first half
+	jne		.next				;if not found, skip
+	cmp		[rsi + 8], r11
 	je		.hit
 
 .next:
@@ -67,9 +63,13 @@ HashSearch:
 
 .miss:							;if no hit, fall through to here
 	mov		rax, -1
+	pop		r11
+	pop		r10
 	ret
 .hit:
 	sub		rsi, rax			;final pointer - offset
 	sar		rsi, 4				;divide by 16 to get index
 	mov		rax, rsi
+	pop		r11
+	pop		r10
 	ret
