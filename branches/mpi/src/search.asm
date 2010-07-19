@@ -40,17 +40,17 @@ default		rel
 ;%define skiphint db 2eh
 
 ;int HashSearch(unsigned int* hash /* rdi */, unsigned int* list /* rsi */, int count /* rdx */);
+;Restriction: count must be a multiple of 4
 global HashSearch:function
 HashSearch:
 	mov		rcx, [rdi]			;r8, r9 = search hash
 	mov		r9, [rdi + 8]
 
 	mov		eax, edx			;count = upper bound
-	dec		eax
 .hashloop:
+	dec		eax
 	lea		rdi, [rax*4]		;compute address
 	lea		rdi, [rdi*4 + rsi]
-
 	cmp		[rdi], rcx			;check first half
 	jne		.unroll2			;if not found, skip
 	cmp		[rdi + 8], r9		;check second half
@@ -59,19 +59,13 @@ HashSearch:
 .unroll2:
 	dec		eax
 	cmp		[rdi - 16], rcx		;check first half
-	jne		.next			;if not found, skip
+	jne		.next				;if not found, skip
 	cmp		[rdi - 8], r9		;check second half
 	je		.hit
 
 .next:
-	dec		eax
-	jnz		.hashloop
-	
-	;still have to test last iteration at this point
-	cmp		[rsi], rcx			;check first half
-	jne		.miss				;if not found, skip
-	cmp		[rsi + 8], r9		;check second half
-	je		.hit
+	cmp		eax, 0
+	jge		.hashloop
 
 .miss:							;if no hit, fall through to here
 	mov		rax, -1
