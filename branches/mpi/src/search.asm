@@ -36,9 +36,6 @@ bits		64
 section		.text
 default		rel
 
-;%define takehint db 3eh
-;%define skiphint db 2eh
-
 ;int HashSearch(unsigned int* hash /* rdi */, unsigned int* list /* rsi */, int count /* rdx */);
 ;Restriction: count must be a multiple of 4
 global HashSearch:function
@@ -48,6 +45,7 @@ HashSearch:
 
 	mov		eax, edx			;count = upper bound
 .hashloop:
+
 	dec		eax
 	lea		rdi, [rax*4]		;compute address
 	lea		rdi, [rdi*4 + rsi]
@@ -59,8 +57,22 @@ HashSearch:
 .unroll2:
 	dec		eax
 	cmp		[rdi - 16], rcx		;check first half
-	jne		.next				;if not found, skip
+	jne		.unroll3			;if not found, skip
 	cmp		[rdi - 8], r9		;check second half
+	je		.hit
+	
+.unroll3:
+	dec		eax
+	cmp		[rdi - 32], rcx		;check first half
+	jne		.unroll4			;if not found, skip
+	cmp		[rdi - 24], r9		;check second half
+	je		.hit
+	
+.unroll4:
+	dec		eax
+	cmp		[rdi - 48], rcx		;check first half
+	jne		.next				;if not found, skip
+	cmp		[rdi - 40], r9		;check second half
 	je		.hit
 
 .next:
