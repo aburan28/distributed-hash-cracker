@@ -39,7 +39,7 @@ default		rel
 ;int HashSearch(unsigned int* hash /* rdi */, unsigned int* list /* rsi */, int count /* rdx */);
 global HashSearch:function
 HashSearch:
-	mov		r8, [rdi]			;r8, r9 = search hash
+	mov		rcx, [rdi]			;r8, r9 = search hash
 	mov		r9, [rdi + 8]
 
 	mov		rax, rsi			;save orig list ptr
@@ -48,7 +48,7 @@ HashSearch:
 	add		rdx, rsi			;rdx = max offset
 	
 .hashloop:
-	cmp		[rsi], r8			;check first half
+	cmp		[rsi], rcx			;check first half
 	jne		.next				;if not found, skip
 	cmp		[rsi + 8], r9
 	je		.hit
