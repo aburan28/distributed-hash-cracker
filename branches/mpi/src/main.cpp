@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdint.h>
 
 void* aligned_malloc(size_t size);
 void aligned_free(void* ptr);
