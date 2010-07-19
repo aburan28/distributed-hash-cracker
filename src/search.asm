@@ -52,8 +52,15 @@ HashSearch:
 	lea		rdi, [rdi*4 + rsi]
 
 	cmp		[rdi], rcx			;check first half
-	jne		.next				;if not found, skip
+	jne		.unroll2			;if not found, skip
 	cmp		[rdi + 8], r9		;check second half
+	je		.hit
+	
+.unroll2:
+	dec		eax
+	cmp		[rdi - 16], rcx		;check first half
+	jne		.next			;if not found, skip
+	cmp		[rdi - 8], r9		;check second half
 	je		.hit
 
 .next:
