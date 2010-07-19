@@ -1,7 +1,7 @@
 SET(ASM_OUTPUTS "")
 IF(AMD64)
 	FOREACH(SRC
-		#md5_amd64.asm
+		search.asm
 		)
 		
 		#Get some file names
@@ -30,4 +30,4 @@ ADD_EXECUTABLE(mpicrack
 )
 
 TARGET_LINK_LIBRARIES(mpicrack
-	m ${MPI_LIBRARIES})
+	m ${MPI_LIBRARIES} rt)

@@ -1,0 +1,4 @@
+All profiling using one core of GLaDOS
+
+Search (1000 iterations)
+27.67	28.07	27.56	27.49	27.67			138.45					C++ -O3
