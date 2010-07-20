@@ -67,7 +67,8 @@ int main(int argc, char* argv[])
 
 	//ComparisonPerformanceTest();
 	//MD5PerformanceTest();
-	HashAndCheckPerformanceTest(hashbuf, linecount);
+	//HashAndCheckPerformanceTest(hashbuf, linecount);
+	IncrementPerformanceTest();
 	
 	//TODO: preprocess (subtract constants etc)
 	

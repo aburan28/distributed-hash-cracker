@@ -40,6 +40,7 @@
 #include "mpicrack.h"
 #include <stdlib.h>
 #include <string.h>
+#include "BaseN.h"
 
 void MD5PerformanceTest()
 {
@@ -158,3 +159,14 @@ void HashAndCheckPerformanceTest(unsigned int* hashbuf, int linecount)
 	aligned_free(testlist);
 }
 
+void IncrementPerformanceTest()
+{
+	int num[8] = {0};
+	int testcount = 100000000;
+	double start = GetTime();
+	for(int i=0; i<testcount; i++)
+		BaseNAdd1(num, 62, 8);
+	double dt = GetTime() - start;
+	double speed = testcount / (1E9 * dt);
+	printf("Elapsed time for %d iterations: %.2f ms (%.2f GInc/sec)\n", testcount, 1000*dt, speed);
+}
