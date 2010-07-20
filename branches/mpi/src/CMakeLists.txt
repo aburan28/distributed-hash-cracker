@@ -23,8 +23,11 @@ ENDFOREACH()
 ###############################################################################
 #C++ compilation and linking
 ADD_EXECUTABLE(mpicrack
+	BaseN.cpp
 	
 	${ASM_OUTPUTS}
+	
+	benchmarks.cpp
 	main.cpp
 )
 

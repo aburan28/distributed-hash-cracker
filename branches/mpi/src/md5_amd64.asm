@@ -1,8 +1,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                                                                             ;
-; Distributed Hash Cracker v3.0                                               ;
+; Distributed Hash Cracker v3.0 DEFCON EDITION                                ;
 ;                                                                             ;
-; Copyright (c) 2009 RPISEC.                                                  ;
+; Copyright (c) 2009-2010 RPISEC.                                             ;
 ; All rights reserved.                                                        ;
 ;                                                                             ;
 ; Redistribution and use in source and binary forms, with or without modifi-  ;
