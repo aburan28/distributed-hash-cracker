@@ -1,5 +1,6 @@
 SET(ASM_OUTPUTS "")
 FOREACH(SRC
+	md5_amd64.asm
 	search.asm
 	)
 	

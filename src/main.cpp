@@ -48,9 +48,12 @@ void aligned_free(void* ptr);
 double GetTime(clockid_t id = CLOCK_REALTIME);
 double GetTimeResolution(clockid_t id = CLOCK_REALTIME);
 
+//ASM imports
 extern "C" int HashSearch(unsigned int* hash, unsigned int* list, int count);
+extern "C" void MD5Hash(char* in, char* out, unsigned long len);
 
 void ComparisonPerformanceTest();
+void MD5PerformanceTest();
 
 unsigned int* read_hashes(long* pLinecount, const char* fname, int rank);
 
@@ -77,7 +80,8 @@ int main(int argc, char* argv[])
 	long linecount = 0;
 	unsigned int* hashbuf = read_hashes(&linecount, fname, rank);
 
-	ComparisonPerformanceTest();
+	//ComparisonPerformanceTest();
+	MD5PerformanceTest();
 	
 	//TODO: preprocess (subtract constants etc)
 	
@@ -199,6 +203,42 @@ double GetTimeResolution(clockid_t id)
 	double d = static_cast<double>(t.tv_nsec) / 1E9f;
 	d += t.tv_sec;
 	return d;
+}
+
+void MD5PerformanceTest()
+{
+	//Fill the plaintext with junk
+	char* plaintext = static_cast<char*>(aligned_malloc(128));
+	memset(plaintext, 0, 128);
+	strcpy(plaintext, "foobar");
+	strcpy(plaintext + 32, "foobaz");
+	strcpy(plaintext + 64, "asdfgh");
+	strcpy(plaintext + 96, "asdfgj");
+	
+	//Allocate hash block
+	char* hash = static_cast<char*>(aligned_malloc(64));
+	
+	//Hash it
+	int testcount = 1000000;
+	double start = GetTime();
+	for(int i=0; i<testcount; i++)
+		MD5Hash(plaintext, hash, 6);
+	double dt = GetTime() - start;
+	double speed = 4*testcount / (1E6 * dt);
+	printf("Elapsed time for %d iterations: %.2f ms (%.2f MHash/sec)\n", testcount, 1000*dt, speed);
+	
+	for(int i=0; i<4; i++)
+	{
+		printf("hash %d: ", i);
+		unsigned char* ph = reinterpret_cast<unsigned char*>(hash) + 16*i;
+		for(int j=0; j<16; j++)
+			printf("%02x", ph[j]);
+		printf("\n");
+	}
+	
+	
+	aligned_free(hash);
+	aligned_free(plaintext);
 }
 
 void ComparisonPerformanceTest()
