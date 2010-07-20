@@ -54,6 +54,7 @@ extern "C" void MD5Hash(char* in, char* out, unsigned long len);
 
 void ComparisonPerformanceTest();
 void MD5PerformanceTest();
+void HashAndCheckPerformanceTest(unsigned int* hashbuf, int linecount);
 
 unsigned int* read_hashes(long* pLinecount, const char* fname, int rank);
 
@@ -81,7 +82,8 @@ int main(int argc, char* argv[])
 	unsigned int* hashbuf = read_hashes(&linecount, fname, rank);
 
 	//ComparisonPerformanceTest();
-	MD5PerformanceTest();
+	//MD5PerformanceTest();
+	HashAndCheckPerformanceTest(hashbuf, linecount);
 	
 	//TODO: preprocess (subtract constants etc)
 	
@@ -234,8 +236,7 @@ void MD5PerformanceTest()
 		for(int j=0; j<16; j++)
 			printf("%02x", ph[j]);
 		printf("\n");
-	}
-	
+	}	
 	
 	aligned_free(hash);
 	aligned_free(plaintext);
@@ -266,4 +267,59 @@ void ComparisonPerformanceTest()
 	
 	aligned_free(testlist);
 	aligned_free(testhash);
+}
+
+void HashAndCheckPerformanceTest(unsigned int* hashbuf, int linecount)
+{
+	//Allocate a test blob
+	const int testcount = 10000;
+	unsigned int* testlist = static_cast<unsigned int*>(aligned_malloc(testcount * 16));
+	memset(testlist, 0, testcount*16);
+	
+	//Copy target hashes into the first N, leaving the rest empty to stress the comparisons
+	for(int i=0; i<4*linecount; i++)
+		testlist[i] = hashbuf[i];
+	
+	//Fill the plaintext with some sample values
+	char* plaintext = static_cast<char*>(aligned_malloc(128));
+	memset(plaintext, 0, 128);
+	strcpy(plaintext, "foobar");
+	strcpy(plaintext + 32, "foobaz");
+	strcpy(plaintext + 64, "asdfgh");
+	strcpy(plaintext + 96, "asdfgj");
+	
+	//Allocate hash block
+	char* hash = static_cast<char*>(aligned_malloc(64));
+	unsigned int* hashes = reinterpret_cast<unsigned int*>(hash);
+
+	int hits[4] = {-2, -2, -2, -2};
+
+	//Hash it
+	int iters = 10000;
+	double start = GetTime();
+	for(int i=0; i<iters; i++)
+	{
+		//Hash the plaintext
+		MD5Hash(plaintext, hash, 6);
+		
+		//Search each hash against the dump
+		for(int j=0; j<4; j++)
+			hits[j] = HashSearch(hashes + 4*j, testlist, testcount);
+	}
+	double dt = GetTime() - start;
+	double speed = 4*testcount / (1E6 * dt);
+	double cspeed = speed * testcount;
+	printf("Elapsed time for %d iterations of %d hashes: %.2f ms (%.2f MHash/sec, %.2f MCmp/sec)\n",
+		iters, testcount, 1000*dt, speed, cspeed);
+	
+	for(int i=0; i<4; i++)
+	{
+		char* p = plaintext + 32*i;
+		p[6] = 0;
+		printf("%s: hit %d\n", p, hits[i]);
+	}
+	
+	aligned_free(hash);
+	aligned_free(plaintext);
+	aligned_free(testlist);
 }
