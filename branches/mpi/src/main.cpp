@@ -308,7 +308,7 @@ void HashAndCheckPerformanceTest(unsigned int* hashbuf, int linecount)
 	}
 	double dt = GetTime() - start;
 	double speed = 4*testcount / (1E6 * dt);
-	double cspeed = speed * testcount;
+	double cspeed = speed * iters;
 	printf("Elapsed time for %d iterations of %d hashes: %.2f ms (%.2f MHash/sec, %.2f MCmp/sec)\n",
 		iters, testcount, 1000*dt, speed, cspeed);
 	
