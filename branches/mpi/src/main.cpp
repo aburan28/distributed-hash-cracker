@@ -54,14 +54,13 @@ int main(int argc, char* argv[])
 	
 	//TODO: Parse arguments
 	const char* fname = "testvectors.txt";
-	int maxlength = 4;
+	int maxlength = 6;
 	const char* charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	int base = strlen(charset);
 	
 	//Read input
 	long linecount = 0;
 	unsigned int* hashbuf = read_hashes(&linecount, fname, rank);
-	unsigned char* phashbuf = reinterpret_cast<unsigned char*>(hashbuf);
 
 	//ComparisonPerformanceTest();
 	//MD5PerformanceTest();
@@ -76,7 +75,7 @@ int main(int argc, char* argv[])
 	for(int len = 1; len <= maxlength; len++)
 	{
 		if(rank == 0)
-			printf("Testing length %d\n", len);
+			printf("Testing length %d on %d procs\n", len, size);
 	
 		//Initial offset
 		//TODO: efficient way of adding quantities which may be over INT_MAX
@@ -90,8 +89,8 @@ int main(int argc, char* argv[])
 		unsigned int* hashes = reinterpret_cast<unsigned int*>(hash);
 		
 		//Run this length
-		bool bDone = false;
-		while(!bDone)
+		int iBlock = 0;
+		while(1)
 		{
 			//TODO: Fill known areas of md5 buffer with zeros and length
 			//so md5 kernel doesnt have to do this in the inner loop
@@ -99,7 +98,7 @@ int main(int argc, char* argv[])
 			//Run the block
 			//This should take on the order of 0.1 - 1s to minimize collective latency problems
 			double tstart = GetTime();
-			bool bQuitNextRound = false;
+			int bQuitNextRound = 0;
 			for(int i=0; i < guessesPerBlock; i+=4)
 			{
 				//TODO: optimize guess generation for minimal overhead if length hasnt changed etc
@@ -124,39 +123,51 @@ int main(int argc, char* argv[])
 					if(hit >= 0)
 					{
 						guesses[j*MAX_BASEN_LENGTH + len] = 0;
-						printf("hit: %s\n", guesses + j*MAX_BASEN_LENGTH);
+						printf("hit: %s (on rank %d)\n", guesses + j*MAX_BASEN_LENGTH, rank);
 					}
 				}
 				
 				//Check if we're at the end
 				if(bQuitNextRound)
 					break;
-				bQuitNextRound = true;
+				bQuitNextRound = 1;
 				for(int k=0; k<len; k++)
 				{
 					if(start[k] != (base - 1) )
 					{
-						bQuitNextRound = false;
+						bQuitNextRound = 0;
 						break;
 					}
 				}
 			}
+			
+			//See if we hit the end of the list anywhere
+			int done = 0;
+			MPI_Allreduce(&bQuitNextRound, &done, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+			if(done)
+				break;
+			
+			//Nope, get ready to do next block
+			for(int i=0; i<size; i++)
+				BaseNAdd(start, base, len, guessesPerBlock);
+				
+			//Compute elapsed time for this block (we synced up due to the allreduce so no need to share stats)
 			double dt = GetTime() - tstart;
-			
-			/*if(rank == 0)
-				printf("block done (in %.2f ms)\n", dt*1000);*/
-			
-			//See if we hit the end of the list
+			if( (rank == 0) && ( (iBlock % 20) == 0 ) )
+			{
+				long hashcount = guessesPerBlock;
+				hashcount *= size;
+				float speed = static_cast<float>(hashcount) / (1E6 * dt);
+				printf("Current speed: %.2f MHash/sec, %.2f MCmp/sec\n", speed, speed*linecount);
+			}
 			
 			/*
-				Print out successes to logfile
+				TODO: Print out successes to logfile rather than just stdout
 				Send all of our successes out to other nodes and get their successes
 				Remove successful plaintexts from target list
 			*/
 			
-			//Are we done yet? TODO collective
-			MPI_Barrier(MPI_COMM_WORLD);
-			bDone = bQuitNextRound;
+			iBlock++;
 		}
 		
 		aligned_free(hash);
@@ -238,7 +249,8 @@ unsigned int* read_hashes(long* pLinecount, const char* fname, int rank)
 	}
 	fclose(fp);
 	
-	printf("done\n");
+	if(rank == 0)
+		printf("done\n");
 	
 	*pLinecount = linecount;
 	return hashbuf;
