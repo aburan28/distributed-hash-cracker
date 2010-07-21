@@ -68,7 +68,8 @@ int main(int argc, char* argv[])
 	//ComparisonPerformanceTest();
 	//MD5PerformanceTest();
 	//HashAndCheckPerformanceTest(hashbuf, linecount);
-	IncrementPerformanceTest();
+	//IncrementPerformanceTest();
+	WorkUnitPerformanceTest();
 	
 	//TODO: preprocess (subtract constants etc)
 	
@@ -190,4 +191,22 @@ double GetTimeResolution(clockid_t id)
 	double d = static_cast<double>(t.tv_nsec) / 1E9f;
 	d += t.tv_sec;
 	return d;
+}
+
+int CHashSearch(unsigned int* hash, unsigned int* list, int count)
+{
+	for(int i=0; i<count; i++)
+    {
+        unsigned int* row = list + (i*4);
+        if(hash[0] != row[0])
+            continue;
+        if(hash[1] != row[1])
+            continue;
+        if(hash[2] != row[2])
+            continue;
+        if(hash[3] != row[3])
+            continue;
+        return i;
+    }
+    return -1;
 }
