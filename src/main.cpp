@@ -58,6 +58,8 @@ int main(int argc, char* argv[])
 	const char* charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	int base = strlen(charset);
 	
+	double gstart = GetTime();
+	
 	//Read input
 	long linecount = 0;
 	unsigned int* hashbuf = read_hashes(&linecount, fname, rank);
@@ -153,7 +155,7 @@ int main(int argc, char* argv[])
 				
 			//Compute elapsed time for this block (we synced up due to the allreduce so no need to share stats)
 			double dt = GetTime() - tstart;
-			if( (rank == 0) && ( (iBlock % 20) == 0 ) )
+			if( (rank == 0) && ( (iBlock % 100) == 0 ) )
 			{
 				long hashcount = guessesPerBlock;
 				hashcount *= size;
@@ -172,9 +174,12 @@ int main(int argc, char* argv[])
 		
 		aligned_free(hash);
 		aligned_free(guesses);
-		
-		//placeholder for collective speed measuring etc 
-		MPI_Barrier(MPI_COMM_WORLD);
+	}
+	
+	if(rank == 0)
+	{
+		double dt = GetTime() - gstart;
+		printf("Done (in %.2f sec)\n", dt);
 	}
 	
 	//Clean up
