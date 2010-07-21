@@ -55,15 +55,20 @@ void ComparisonPerformanceTest()
 	last[2] = testhash[2] = 0xf0000000;
 	last[3] = testhash[3] = 0x00c0ffee;
 	
-	const int iters = 1000;
+	last[0] = 0;
+	last[1] = 0;
+	last[2] = 0;
+	last[3] = 0;
+	
+	const int iters = 10000;
 	int ret = -1;
 	double start = GetTime();
-	for(int i=0; i<iters; i++)
-		ret = AsmHashSearch(testhash, testlist, testcount);
+	/*for(int i=0; i<iters; i++)
+		ret = AsmHashSearch(testhash, testlist, testcount);*/
 	double dt = GetTime() - start;
 	double speed = (iters*testcount) / (1E9 * dt);
-	printf("Elapsed time for %d iterations (ASM): %5.2f ms (%.2f GCmp/sec)\n", iters, 1000*dt, speed);
-	printf("index = %d\n", ret);
+	/*printf("Elapsed time for %d iterations (ASM): %5.2f ms (%.2f GCmp/sec)\n", iters, 1000*dt, speed);
+	printf("index = %d\n", ret);*/
 	
 	//C does beginning-to-end search so flip it
 	last[0] = 0;
@@ -71,10 +76,12 @@ void ComparisonPerformanceTest()
 	last[2] = 0;
 	last[3] = 0;
 	last = testlist + 4*(testcount-1);
-	last[0] = testhash[0];
+	/*last[0] = testhash[0];
 	last[1] = testhash[1];
 	last[2] = testhash[2];
-	last[3] = testhash[3];
+	last[3] = testhash[3];*/
+	
+	printf("testcount = %d iters=%d\n", testcount, iters);
 	
 	ret = -1;
 	start = GetTime();
@@ -197,6 +204,7 @@ void WorkUnitPerformanceTest()
 {
 	int num[8] = {0};
 	int testcount = 10000;
+	int iters = 10000;
 	
 	//Allocate a test blob
 	unsigned int* testlist = static_cast<unsigned int*>(aligned_malloc(testcount * 16));
@@ -221,7 +229,7 @@ void WorkUnitPerformanceTest()
 	////////////////////////////////////////////////////////////////////////////
 	//Increment
 	double start = GetTime();
-	for(int i=0; i<4*testcount; i++)
+	for(int i=0; i<4*iters; i++)
 		BaseNAdd1(num, 62, 8);
 	double dt = GetTime() - start;
 	double total = dt;
@@ -230,7 +238,7 @@ void WorkUnitPerformanceTest()
 	////////////////////////////////////////////////////////////////////////////
 	//Hash
 	start = GetTime();
-	for(int i=0; i<testcount; i++)
+	for(int i=0; i<iters; i++)
 		MD5Hash(plaintext, hash, 6);
 	dt = GetTime() - start;
 	total += dt;
@@ -239,23 +247,23 @@ void WorkUnitPerformanceTest()
 	////////////////////////////////////////////////////////////////////////////
 	//Test
 	start = GetTime();
-	for(int i=0; i<testcount; i++)
+	for(int i=0; i<iters; i++)
 	{
-		hits[0] = CHashSearch(hashes, testlist, testcount);
-		hits[1] = CHashSearch(hashes+4, testlist, testcount);
-		hits[2] = CHashSearch(hashes+8, testlist, testcount);
-		hits[3] = CHashSearch(hashes+12, testlist, testcount);
+		for(int j=0; j<4; j++)
+			hits[j] = CHashSearch(hashes + 4*j, testlist, testcount);
 	}
 	dt = GetTime() - start;
 	total += dt;
+	total = dt;
 	printf("Search:    %9.2f ms\n", 1E3 * dt);
 	
-	int plaincount = testcount*4;
+	printf("testcount = %d iters=%d\n", testcount, iters);
+	int plaincount = iters*4;
 	float plainspeed = static_cast<float>(plaincount) / total;
 	printf("%d plaintexts in %.2f ms: %.2f plaintexts/sec\n", plaincount, 1E3*total, plainspeed);
 	int compcount = plaincount * testcount;
-	float compspeed = static_cast<float>(compcount) / total;
-	printf("%d million comparisons in %.2f ms: %.2f Mcomp/sec\n", static_cast<int>(compcount/1E6), 1E3*total, compspeed / 1E6);
+	float compspeed = static_cast<float>(compcount) / (1E9*total);
+	printf("%d million comparisons in %.2f ms: %.2f GCmp/sec\n", static_cast<int>(compcount/1E6), 1E3*total, compspeed);
 	
 	aligned_free(hash);
 	aligned_free(plaintext);
