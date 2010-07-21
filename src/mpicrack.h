@@ -50,13 +50,18 @@ double GetTime(clockid_t id = CLOCK_REALTIME);
 double GetTimeResolution(clockid_t id = CLOCK_REALTIME);
 
 //ASM imports
-extern "C" int HashSearch(unsigned int* hash, unsigned int* list, int count);
+extern "C" int AsmHashSearch(unsigned int* hash, unsigned int* list, int count);
 extern "C" void MD5Hash(char* in, char* out, unsigned long len);
+
+int CHashSearch(unsigned int* hash, unsigned int* list, int count);
+
+#define HashSearch CHashSearch
 
 void ComparisonPerformanceTest();
 void MD5PerformanceTest();
 void HashAndCheckPerformanceTest(unsigned int* hashbuf, int linecount);
 void IncrementPerformanceTest();
+void WorkUnitPerformanceTest();
 
 unsigned int* read_hashes(long* pLinecount, const char* fname, int rank);
 

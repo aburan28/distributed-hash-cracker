@@ -36,10 +36,10 @@ bits		64
 section		.text
 default		rel
 
-;int HashSearch(unsigned int* hash /* rdi */, unsigned int* list /* rsi */, int count /* rdx */);
+;int AsmHashSearch(unsigned int* hash /* rdi */, unsigned int* list /* rsi */, int count /* rdx */);
 ;Restriction: count must be a multiple of 4
-global HashSearch:function
-HashSearch:
+global AsmHashSearch:function
+AsmHashSearch:
 	mov		rcx, [rdi]			;r8, r9 = search hash
 	mov		r9, [rdi + 8]
 
