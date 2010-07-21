@@ -196,7 +196,7 @@ void IncrementPerformanceTest()
 void WorkUnitPerformanceTest()
 {
 	int num[8] = {0};
-	int testcount = 5000;
+	int testcount = 10000;
 	
 	//Allocate a test blob
 	unsigned int* testlist = static_cast<unsigned int*>(aligned_malloc(testcount * 16));
@@ -224,6 +224,7 @@ void WorkUnitPerformanceTest()
 	for(int i=0; i<4*testcount; i++)
 		BaseNAdd1(num, 62, 8);
 	double dt = GetTime() - start;
+	double total = dt;
 	printf("Increment: %9.2f ms\n", 1E3 * dt);
 	
 	////////////////////////////////////////////////////////////////////////////
@@ -232,6 +233,7 @@ void WorkUnitPerformanceTest()
 	for(int i=0; i<testcount; i++)
 		MD5Hash(plaintext, hash, 6);
 	dt = GetTime() - start;
+	total += dt;
 	printf("Hash:      %9.2f ms\n", 1E3 * dt);
 	
 	////////////////////////////////////////////////////////////////////////////
@@ -239,11 +241,21 @@ void WorkUnitPerformanceTest()
 	start = GetTime();
 	for(int i=0; i<testcount; i++)
 	{
-		for(int j=0; j<4; j++)
-			hits[j] = HashSearch(hashes + 4*j, testlist, testcount);
+		hits[0] = CHashSearch(hashes, testlist, testcount);
+		hits[1] = CHashSearch(hashes+4, testlist, testcount);
+		hits[2] = CHashSearch(hashes+8, testlist, testcount);
+		hits[3] = CHashSearch(hashes+12, testlist, testcount);
 	}
 	dt = GetTime() - start;
+	total += dt;
 	printf("Search:    %9.2f ms\n", 1E3 * dt);
+	
+	int plaincount = testcount*4;
+	float plainspeed = static_cast<float>(plaincount) / total;
+	printf("%d plaintexts in %.2f ms: %.2f plaintexts/sec\n", plaincount, 1E3*total, plainspeed);
+	int compcount = plaincount * testcount;
+	float compspeed = static_cast<float>(compcount) / total;
+	printf("%d million comparisons in %.2f ms: %.2f Mcomp/sec\n", static_cast<int>(compcount/1E6), 1E3*total, compspeed / 1E6);
 	
 	aligned_free(hash);
 	aligned_free(plaintext);
