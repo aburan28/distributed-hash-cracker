@@ -254,7 +254,6 @@ void WorkUnitPerformanceTest()
 	}
 	dt = GetTime() - start;
 	total += dt;
-	total = dt;
 	printf("Search:    %9.2f ms\n", 1E3 * dt);
 	
 	printf("testcount = %d iters=%d\n", testcount, iters);
