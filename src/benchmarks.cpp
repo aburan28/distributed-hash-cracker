@@ -202,7 +202,8 @@ void IncrementPerformanceTest()
 
 void WorkUnitPerformanceTest()
 {
-	int num[8] = {0};
+	const int numlen = 8;
+	int num[numlen] = {0};
 	int testcount = 10000;
 	int iters = 10000;
 	
@@ -212,12 +213,9 @@ void WorkUnitPerformanceTest()
 	
 	//Fill the plaintext with some sample values
 	char* plaintext = static_cast<char*>(aligned_malloc(128));
+	const char* charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	memset(plaintext, 0, 128);
-	strcpy(plaintext, "foobar");
-	strcpy(plaintext + 32, "foobaz");
-	strcpy(plaintext + 64, "asdfgh");
-	strcpy(plaintext + 96, "asdfgj");
-	
+
 	//Allocate hash block
 	char* hash = static_cast<char*>(aligned_malloc(64));
 	unsigned int* hashes = reinterpret_cast<unsigned int*>(hash);
@@ -230,10 +228,26 @@ void WorkUnitPerformanceTest()
 	//Increment
 	double start = GetTime();
 	for(int i=0; i<4*iters; i++)
-		BaseNAdd1(num, 62, 8);
+		BaseNAdd1(num, 62, numlen);
 	double dt = GetTime() - start;
 	double total = dt;
 	printf("Increment: %9.2f ms\n", 1E3 * dt);
+	
+	////////////////////////////////////////////////////////////////////////////
+	//GuessGen
+	start = GetTime();
+	for(int i=0; i<iters; i++)
+	{
+		for(int j=0; j<4; j++)
+		{
+			char* base = plaintext + 32*j;
+			for(int k=0; k<numlen; k++)
+				base[k] = charset[num[k]];
+		}
+	}
+	dt = GetTime() - start;
+	total += dt;
+	printf("GuessGen:  %9.2f ms\n", 1E3 * dt);
 	
 	////////////////////////////////////////////////////////////////////////////
 	//Hash
