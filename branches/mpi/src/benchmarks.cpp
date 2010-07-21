@@ -196,7 +196,7 @@ void IncrementPerformanceTest()
 void WorkUnitPerformanceTest()
 {
 	int num[8] = {0};
-	int testcount = 1000;
+	int testcount = 5000;
 	
 	//Allocate a test blob
 	unsigned int* testlist = static_cast<unsigned int*>(aligned_malloc(testcount * 16));
@@ -224,7 +224,7 @@ void WorkUnitPerformanceTest()
 	for(int i=0; i<4*testcount; i++)
 		BaseNAdd1(num, 62, 8);
 	double dt = GetTime() - start;
-	printf("Increment: %7.2f us\n", 1E6 * dt);
+	printf("Increment: %9.2f ms\n", 1E3 * dt);
 	
 	////////////////////////////////////////////////////////////////////////////
 	//Hash
@@ -232,7 +232,7 @@ void WorkUnitPerformanceTest()
 	for(int i=0; i<testcount; i++)
 		MD5Hash(plaintext, hash, 6);
 	dt = GetTime() - start;
-	printf("Hash:      %7.2f us\n", 1E6 * dt);
+	printf("Hash:      %9.2f ms\n", 1E3 * dt);
 	
 	////////////////////////////////////////////////////////////////////////////
 	//Test
@@ -243,7 +243,7 @@ void WorkUnitPerformanceTest()
 			hits[j] = HashSearch(hashes + 4*j, testlist, testcount);
 	}
 	dt = GetTime() - start;
-	printf("Search:    %7.2f us\n", 1E6 * dt);
+	printf("Search:    %9.2f ms\n", 1E3 * dt);
 	
 	aligned_free(hash);
 	aligned_free(plaintext);
