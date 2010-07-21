@@ -41,6 +41,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "mpicrack.h"
+#include "BaseN.h"
 
 int main(int argc, char* argv[])
 {
@@ -51,43 +52,118 @@ int main(int argc, char* argv[])
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	
-	//Parse arguments
+	//TODO: Parse arguments
 	const char* fname = "testvectors.txt";
-	int maxlength = 6;
-	
-	/*
-	printf("Resolution of CLOCK_REALTIME: %.7f ns\n", 1E9 * GetTimeResolution(CLOCK_REALTIME));
-	printf("Resolution of CLOCK_MONOTONIC: %.7f ns\n", 1E9 * GetTimeResolution(CLOCK_MONOTONIC));
-	printf("Resolution of CLOCK_PROCESS_CPUTIME_ID: %.7f ns\n", 1E9 * GetTimeResolution(CLOCK_PROCESS_CPUTIME_ID));
-	*/
+	int maxlength = 4;
+	const char* charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	int base = strlen(charset);
 	
 	//Read input
 	long linecount = 0;
 	unsigned int* hashbuf = read_hashes(&linecount, fname, rank);
+	unsigned char* phashbuf = reinterpret_cast<unsigned char*>(hashbuf);
 
 	//ComparisonPerformanceTest();
 	//MD5PerformanceTest();
 	//HashAndCheckPerformanceTest(hashbuf, linecount);
 	//IncrementPerformanceTest();
-	WorkUnitPerformanceTest();
+	//WorkUnitPerformanceTest();
 	
-	//TODO: preprocess (subtract constants etc)
+	//TODO: preprocess (subtract constants etc) the list
 	
-	for(int len = 1; len < maxlength; len++)
+	int guessesPerBlock = 1000000;					//1M. Can be changed but must be divisible by 4
+	int start[MAX_BASEN_LENGTH] = {0};
+	for(int len = 1; len <= maxlength; len++)
 	{
-		/*
-			Find our block's start and end values
-			Divide into groups of ~10M guesses
-			For each group:
-				Fill known areas of md5 buffer
-				For each guess:
-					generate plaintexts
-					hash plaintexts
-					check plaintexts against list of hashes, add successes to list if needed
+		if(rank == 0)
+			printf("Testing length %d\n", len);
+	
+		//Initial offset
+		//TODO: efficient way of adding quantities which may be over INT_MAX
+		memset(start, 0, MAX_BASEN_LENGTH*4);
+		for(int i=0; i<rank; i++)
+			BaseNAdd(start, base, len, guessesPerBlock);
+		
+		char* guesses = static_cast<char*>(aligned_malloc(4*MAX_BASEN_LENGTH));
+		memset(guesses, 0, 4*MAX_BASEN_LENGTH);
+		char* hash = static_cast<char*>(aligned_malloc(64));
+		unsigned int* hashes = reinterpret_cast<unsigned int*>(hash);
+		
+		//Run this length
+		bool bDone = false;
+		while(!bDone)
+		{
+			//TODO: Fill known areas of md5 buffer with zeros and length
+			//so md5 kernel doesnt have to do this in the inner loop
+			
+			//Run the block
+			//This should take on the order of 0.1 - 1s to minimize collective latency problems
+			double tstart = GetTime();
+			bool bQuitNextRound = false;
+			for(int i=0; i < guessesPerBlock; i+=4)
+			{
+				//TODO: optimize guess generation for minimal overhead if length hasnt changed etc
+				
+				//Build four guesses
+				for(int j=0; j<4; j++)
+				{
+					for(int k=0; k<len; k++)
+						guesses[j*MAX_BASEN_LENGTH + k] = charset[start[k]];
+								
+					BaseNAdd1(start, base, len);
+				}
+				
+				//Hash
+				MD5Hash(guesses, hash, len);
+				
+				//Now for the fun part... check if we found anything
+				for(int j=0; j<4; j++)
+				{
+					int hit = CHashSearch(hashes + 4*j, hashbuf, linecount);
+						
+					if(hit >= 0)
+					{
+						guesses[j*MAX_BASEN_LENGTH + len] = 0;
+						printf("hit: %s\n", guesses + j*MAX_BASEN_LENGTH);
+					}
+				}
+				
+				//Check if we're at the end
+				if(bQuitNextRound)
+					break;
+				bQuitNextRound = true;
+				for(int k=0; k<len; k++)
+				{
+					if(start[k] != (base - 1) )
+					{
+						bQuitNextRound = false;
+						break;
+					}
+				}
+			}
+			double dt = GetTime() - tstart;
+			
+			/*if(rank == 0)
+				printf("block done (in %.2f ms)\n", dt*1000);*/
+			
+			//See if we hit the end of the list
+			
+			/*
 				Print out successes to logfile
 				Send all of our successes out to other nodes and get their successes
 				Remove successful plaintexts from target list
-		 */					
+			*/
+			
+			//Are we done yet? TODO collective
+			MPI_Barrier(MPI_COMM_WORLD);
+			bDone = bQuitNextRound;
+		}
+		
+		aligned_free(hash);
+		aligned_free(guesses);
+		
+		//placeholder for collective speed measuring etc 
+		MPI_Barrier(MPI_COMM_WORLD);
 	}
 	
 	//Clean up
@@ -122,7 +198,6 @@ void aligned_free(void* ptr)
  */
 unsigned int* read_hashes(long* pLinecount, const char* fname, int rank)
 {
-
 	//Read input file
 	//We expect 33 bytes per line (32 hex + \n)
 	FILE* fp = fopen(fname, "r");
