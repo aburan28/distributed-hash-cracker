@@ -270,13 +270,20 @@ void WorkUnitPerformanceTest()
 	total += dt;
 	printf("Search:    %9.2f ms\n", 1E3 * dt);
 	
-	printf("testcount = %d iters=%d\n", testcount, iters);
 	int plaincount = iters*4;
 	float plainspeed = static_cast<float>(plaincount) / total;
 	printf("%d plaintexts in %.2f ms: %.2f plaintexts/sec\n", plaincount, 1E3*total, plainspeed);
 	int compcount = plaincount * testcount;
 	float compspeed = static_cast<float>(compcount) / (1E9*total);
 	printf("%d million comparisons in %.2f ms: %.2f GCmp/sec\n", static_cast<int>(compcount/1E6), 1E3*total, compspeed);
+	
+	float ccnispeed = compspeed * (2.6f / 3.0f);
+	printf("Estimated CCNI speed: %.2f GCmp/sec per core\n", ccnispeed);
+	printf("                      %.2f TCmp/sec overall\n", ccnispeed * 1.848);
+	
+	ccnispeed = plainspeed * (2.6f / 3E6);
+	printf("                      %.2f MHash/sec per core\n", ccnispeed);
+	printf("                      %.2f MHash/sec overall\n", ccnispeed * 1848);
 	
 	aligned_free(hash);
 	aligned_free(plaintext);
