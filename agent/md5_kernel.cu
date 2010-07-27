@@ -121,13 +121,10 @@ extern "C" __global__ void md5Kernel(int* gtarget, int* gstart, char* gsalt, cha
 	int index = (blockDim.x * blockIdx.x) + threadIdx.x;
 	
 	//Cache charset in shmem
-	__shared__ char charset[256];
-	
+	__shared__ int xcharset[64];
+	char* charset = (char*)&xcharset[0];
 	if(threadIdx.x < ((base+1) >> 2))
-	{
-		int* ccs = (int*)&charset[0];
-		ccs[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
-	}
+		xcharset[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
 	
 	//Cache start value
 	__shared__ int start[32];
@@ -186,12 +183,10 @@ extern "C" __global__ void md5BatchKernel(int* gtarget, int* gstart, char* gsalt
 	int index = (blockDim.x * blockIdx.x) + threadIdx.x;
 	
 	//Cache charset in shmem
-	__shared__ char charset[256];
-	if(threadIdx.x < ceil((float)base / 4))
-	{
-		int* ccs = (int*)&charset[0];
-		ccs[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
-	}
+	__shared__ int xcharset[64];
+	char* charset = (char*)&xcharset[0];
+	if(threadIdx.x < ((base+1) >> 2))
+		xcharset[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
 	
 	//Cache start value
 	__shared__ int start[32];
@@ -199,24 +194,12 @@ extern "C" __global__ void md5BatchKernel(int* gtarget, int* gstart, char* gsalt
 		start[threadIdx.x] = gstart[threadIdx.x];
 	
 	//Cache target value
-	__shared__ int target[4 * 128];
-	if(threadIdx.x < 64)
+	__shared__ int target[4 * 256];
+	if(threadIdx.x < hashcount)
 	{
-		int td = threadIdx.x;
-		if(td < hashcount)
-		{
-			for(int i=0; i<4; i++)
-				target[4*td + i] = gtarget[4*td + i];
-		}
-		if(td > 64)
-		{
-			td -= 64;
-			if(td < hashcount)
-			{
-				for(int i=0; i<4; i++)
-					target[4*td + i] = gtarget[4*td + i];
-			}
-		}
+		int tbase = (threadIdx.x << 2);
+		for(int i=0; i<4; i++)
+			target[tbase + i] = gtarget[tbase + i];
 	}
 	
 	//Wait for all cache filling to finish
@@ -227,15 +210,15 @@ extern "C" __global__ void md5BatchKernel(int* gtarget, int* gstart, char* gsalt
 	
 	for(int i=0; i<hashcount; i++)
 	{
-		int* xtarget = target + (4*i);
+		int* xtarget = target + (i << 2);
 		
 		//Check results
 		if(xtarget[0] == a && xtarget[1] == b && xtarget[2] == c && xtarget[3] == d)
 		{
 			status[i] = 1;
 			
-			int* po = (int*)output + (i*8);
-			switch(len / 4)
+			int* po = (int*)output + (i << 3);
+			switch(lo4)
 			{
 				SaveOutput(7);
 				SaveOutput(6);
