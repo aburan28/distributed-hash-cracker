@@ -3,7 +3,7 @@
 *                                                                             *
 * Distributed Hash Cracker v3.0                                               *
 *                                                                             *
-* Copyright (c) 2009 RPISEC.                                                  *
+* Copyright (c) 2009-2010 RPISEC.                                             *
 * All rights reserved.                                                        *
 *                                                                             *
 * Redistribution and use in source and binary forms, with or without modifi-  *
@@ -251,9 +251,9 @@ function DoQueue()
 		}
 		
 		//GPUs have limited memory!
-		if(count($hashes) > 128)
+		if(count($hashes) > 256)
 		{
-			echo "The current implementation is limited to 128 simultaneous hashes.";
+			echo "The current implementation is limited to 256 simultaneous hashes.";
 			$bOK = false;
 		}
 		
