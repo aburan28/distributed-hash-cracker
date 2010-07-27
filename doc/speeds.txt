@@ -1,0 +1,12 @@
+All profiling using one core of GLaDOS
+
+Search (1000 iterations)
+r7		C++ -O3				 7.26	 7.35	 7.29	 7.30	 7.38 
+r8		Initial SSE			23.17	22.99	22.78	22.80	22.87
+r9		Improved SSE		17.77	17.68	17.88	17.71	17.68
+r11		Initial non-SSE		13.37	13.43	13.38	13.50	13.36
+r12		Tweaks				16.84	16.78	16.74	16.68	16.72
+r14		Shortened			13.66	13.51	13.52	13.51	13.45
+r15		Reverse search		16.72	16.69	16.70	16.73	16.71
+r17		Fun roll loops		11.80	11.75	11.75	11.81	11.73
+r19		4x unroll			10.10	10.03	10.10	10.10	10.10
