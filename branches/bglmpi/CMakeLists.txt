@@ -17,7 +17,7 @@ SET( LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 SET(EXTRA_WARNINGS "-Wcast-align -Winit-self -Wmissing-declarations")
 SET(EXTRA_WARNINGS "${EXTRA_WARNINGS} -Wswitch -Wunsafe-loop-optimizations -Wwrite-strings ")
 SET(WARNINGS "-Wall -Wextra -pedantic ${EXTRA_WARNINGS}")
-SET( CMAKE_CXX_FLAGS "${WARNINGS} ${MPI_COMPILE_FLAGS} -O3 -march=opteron-sse3 -mtune=opteron-sse3 -m64")
+SET( CMAKE_CXX_FLAGS "${WARNINGS} ${MPI_COMPILE_FLAGS} -O3 -m64")
 SET( CMAKE_LD_FLAGS "-m64 ${MPI_LINK_FLAGS}")
 
 #Grab a config.h if we have one
