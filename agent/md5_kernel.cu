@@ -122,7 +122,8 @@ extern "C" __global__ void md5Kernel(int* gtarget, int* gstart, char* gsalt, cha
 	
 	//Cache charset in shmem
 	__shared__ char charset[256];
-	if(threadIdx.x < ceil((float)base / 4))
+	
+	if(threadIdx.x < ((base+1) >> 2))
 	{
 		int* ccs = (int*)&charset[0];
 		ccs[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
@@ -150,7 +151,7 @@ extern "C" __global__ void md5Kernel(int* gtarget, int* gstart, char* gsalt, cha
 		*status = 1;
 		
 		int* po = (int*)output;
-		switch(len / 4)
+		switch(lo4)
 		{
 			SaveOutput(7);
 			SaveOutput(6);
