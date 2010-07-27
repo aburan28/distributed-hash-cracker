@@ -54,7 +54,7 @@ unsigned int buf10 = 0;
 unsigned int buf11 = 0;
 unsigned int buf12 = 0;
 unsigned int buf13 = 0;
-unsigned int buf14 = len * 8;
+unsigned int buf14 = len << 3;
 unsigned int buf15 = 0;
 
 //Message data (deliberate fall-through)
@@ -62,7 +62,7 @@ unsigned int buf15 = 0;
 //Ripple carry, etc is done in the InitGuess macros.
 unsigned int lstart0=0, lstart1=0, lstart2=0, lstart3=0;
 unsigned int lm1 = len-1;
-unsigned int lo4 = len/4;
+unsigned int lo4 = len>>2;
 unsigned int carry = 0;		//no initial carry-in
 switch(lo4)
 {
@@ -91,7 +91,7 @@ default:
 //STEP 2: Append Padding Bits
 unsigned int padding = 0x80 << ( (len & 0x3) << 3);
 unsigned int paddmask = 0xFFFFFFFF << ( (len & 0x3) << 3);
-switch(len / 4)
+switch(lo4)
 {
 	AddPadding(0);
 	AddPadding(1);
@@ -104,28 +104,6 @@ switch(len / 4)
 	AddPadding(8);
 	//Skip other values since guess length is limited to 32
 }
-	
-/*
-//DEBUG: Report status
-char* p0 = (char*)&buf0;
-if(len==6 &&
-	(charset[start[0]] == 'e' && charset[start[1]] == 'm' &&
-	charset[start[2]] == 'z' && charset[start[3]] == 'e' &&
-	charset[start[4]] == 'y' && charset[start[5]] == '7' )
-
-	&& index == 0
-	)
-{
-	*status = 1;
-	int* pi = (int*) output;
-	
-	pi[0] = buf0;
-	pi[1] = buf1;
-	pi[2] = buf2;
-	pi[3] = lo4;
-}
-return;
-*/
 
 //////////////////////////////////////////////////////////////////////////////
 //STEP 3: Initialize Constants
