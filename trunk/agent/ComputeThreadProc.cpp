@@ -285,7 +285,7 @@ void DoWorkUnitOnGPU(WorkUnit& wu, Device* pDevice, CudaContext* pContext)
 	
 	//A few settings
 	//TODO: Calculate on a per-algorithm basis and store in XML
-	int threadcount = 256;			//MD5 needs >=256
+	int threadcount = 256;			//All but md5crypt need exactly 256 for now
 	int xblockcount = 16384;
 	if(pDevice->GetMajorVersion() > 1 || pDevice->GetMinorVersion() >= 3)
 	{
