@@ -196,6 +196,16 @@ extern "C" __global__ void ntlmBatchKernel(int* gtarget, int* gstart, char* gsal
 		for(int i=0; i<4; i++)
 			target[tbase + i] = gtarget[tbase + i];
 	}
+	if(blockDim.x < hashcount)								//assumes max hashes >= 2*blockDim.x
+	{
+		int tb = threadIdx.x + blockDim.x;
+		if(tb < hashcount)
+		{
+			int tbase = (tb << 2);
+			for(int i=0; i<4; i++)
+				target[tbase + i] = gtarget[tbase + i];
+		}
+	}
 	
 	//Wait for all cache filling to finish
 	__syncthreads();
