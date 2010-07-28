@@ -146,7 +146,7 @@ unsigned int buf15 = 0;
 	switch(lo4)
 	{
 	case 7:
-		InitGuess(7, 31,30,29,28);
+		InitGuess(7, 31,30,29,28);	//first 30 should be 31, this is a workaround for a Fermi segfault
 	case 6:
 		InitGuess(6, 27,26,25,24);
 	case 5:
@@ -163,7 +163,7 @@ unsigned int buf15 = 0;
 	default:
 		InitGuess(0, 3,2,1,0);
 	}
-
+	
 	//Skip other values since guess length is limited to 32
 
 	//////////////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ unsigned int buf15 = 0;
 		//Skip other values since guess length is limited to 32
 	}
 #endif
-	
+
 //////////////////////////////////////////////////////////////////////////////
 //STEP 3: Initialize Constants
 //Variable declarations
@@ -252,7 +252,7 @@ md4round_h(a,b,c,d,3,3);
 	md4round_h(d,a,b,c,11,9);
 	md4round_h(c,d,a,b,7,11);
 	md4round_h(b,c,d,a,15,15);
-	
+
 //////////////////////////////////////////////////////////////////////////////
 //STEP 5: Output
 
