@@ -146,7 +146,7 @@ unsigned int buf15 = 0;
 	switch(lo4)
 	{
 	case 7:
-		InitGuess(7, 31,30,29,28);	//first 30 should be 31, this is a workaround for a Fermi segfault
+		InitGuess(7, 31,30,29,28);
 	case 6:
 		InitGuess(6, 27,26,25,24);
 	case 5:
