@@ -165,7 +165,7 @@ extern "C" __global__ void md5Kernel(int* gtarget, int* gstart, char* gsalt, cha
 /*!
 	@brief CUDA implementation of MD5 with batch processing support
 	
-	Thread-per-block requirement: minimum 64
+	Thread-per-block requirement: minimum 256
 	
 	@param gtarget Target value (four ints, little endian)
 	@param gstart Start index in charset (array of 32 ints, data is left aligned, unused values are at right)
@@ -194,7 +194,7 @@ extern "C" __global__ void md5BatchKernel(int* gtarget, int* gstart, char* gsalt
 		start[threadIdx.x] = gstart[threadIdx.x];
 	
 	//Cache target value
-	__shared__ int target[4 * 256];
+	__shared__ int target[4 * 512];
 	if(threadIdx.x < hashcount)
 	{
 		int tbase = (threadIdx.x << 2);

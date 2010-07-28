@@ -251,9 +251,9 @@ function DoQueue()
 		}
 		
 		//GPUs have limited memory!
-		if(count($hashes) > 256)
+		if(count($hashes) > 512)
 		{
-			echo "The current implementation is limited to 256 simultaneous hashes.";
+			echo "The current implementation is limited to 512 simultaneous hashes.";
 			$bOK = false;
 		}
 		

@@ -249,8 +249,8 @@ void DoWorkUnitOnGPU(WorkUnit& wu, Device* pDevice, CudaContext* pContext)
 		ThrowError("Invalid work unit");	
 	if(len > 30)
 		ThrowError("Input too big");
-	if(nTargetHashes > 256)
-		ThrowError("Max 256 hashes per block\n");
+	if(nTargetHashes > 512)
+		ThrowError("Max 512 hashes per block\n");
 	
 	//TODO: Sanity check charset (duplicate check, etc)?
 	

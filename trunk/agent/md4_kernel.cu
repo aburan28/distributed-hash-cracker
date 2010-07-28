@@ -210,7 +210,7 @@ extern "C" __global__ void md4_fastKernel(int* gtarget, int* gstart, char* gsalt
 /*!
 	@brief CUDA implementation of MD4 with batch cracking support
 	
-	Thread-per-block requirement: minimum 64
+	Thread-per-block requirement: minimum 256
 	
 	@param gtarget Target value (four ints, little endian)
 	@param gstart Start index in charset (array of 32 ints, data is left aligned, unused values are at right)
@@ -239,25 +239,13 @@ extern "C" __global__ void md4BatchKernel(int* gtarget, int* gstart, char* gsalt
 		start[threadIdx.x] = gstart[threadIdx.x];
 	
 	//Cache target value
-	__shared__ int target[4 * 128];
-	if(threadIdx.x < 64)
+	__shared__ int target[4 * 512];
+	if(threadIdx.x < hashcount)
 	{
-		int td = threadIdx.x;
-		if(td < hashcount)
-		{
-			for(int i=0; i<4; i++)
-				target[4*td + i] = gtarget[4*td + i];
-		}
-		if(td > 64)
-		{
-			td -= 64;
-			if(td < hashcount)
-			{
-				for(int i=0; i<4; i++)
-					target[4*td + i] = gtarget[4*td + i];
-			}
-		}
-	}
+		int tbase = (threadIdx.x << 2);
+		for(int i=0; i<4; i++)
+			target[tbase + i] = gtarget[tbase + i];
+	} 
 	
 	//Wait for all cache filling to finish
 	__syncthreads();
