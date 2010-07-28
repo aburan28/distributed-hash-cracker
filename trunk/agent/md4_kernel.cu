@@ -54,10 +54,10 @@ texture<int, 1, cudaReadModeElementType> texCharset;
 			LstartInit(lstart0, d);				\
 			/* Pack four elements into the int (if we exceed length, padding will overwrite the garbage) */	\
 			buf##num = 							\
-			(charset[lstart3] << 24) | 			\
-			(charset[lstart2] << 16) | 			\
-			(charset[lstart1] << 8) |  			\
-			 charset[lstart0];					\
+			(charset[lstart3 & 0xff] << 24) | 			\
+			(charset[lstart2 & 0xff] << 16) | 			\
+			(charset[lstart1 & 0xff] << 8) |  			\
+			 charset[lstart0 & 0xff];					\
 		}
 		 
 #define LstartInit(ls, num)								\
@@ -103,12 +103,10 @@ extern "C" __global__ void md4Kernel(int* gtarget, int* gstart, char* gsalt, cha
 	int index = (blockDim.x * blockIdx.x) + threadIdx.x;
 	
 	//Cache charset in shmem
-	__shared__ char charset[256];
-	if(threadIdx.x < ceil((float)base / 4))
-	{
-		int* ccs = (int*)&charset[0];
-		ccs[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
-	}
+	__shared__ int xcharset[64];
+	char* charset = (char*)&xcharset[0];
+	if(threadIdx.x < ((base+1) >> 2))
+		xcharset[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
 	
 	//Cache start value
 	__shared__ int start[32];
@@ -161,18 +159,16 @@ extern "C" __global__ void md4Kernel(int* gtarget, int* gstart, char* gsalt, cha
 	@param saltlen Length of salt (not used)
 	@param hashcount Number of hashes being tested (not used)
  */
-extern "C" __global__ void md4_fastKernel(int* gtarget, int* gstart, char* gsalt, char* status, char* output, int base, int len, int saltlen, int hashcount)
+extern "C" __global__ void md4_fastKernel(int* gtarget, int* gstart, char* gsalt, char* status, int* output, int base, int len, int saltlen, int hashcount)
 {
 	//Get our position in the grid
 	int index = (blockDim.x * blockIdx.x) + threadIdx.x;
 	
 	//Cache charset in shmem
-	__shared__ char charset[256];
-	if(threadIdx.x < ceil((float)base / 4))
-	{
-		int* ccs = (int*)&charset[0];
-		ccs[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
-	}
+	__shared__ int xcharset[64];
+	char* charset = (char*)&xcharset[0];
+	if(threadIdx.x < ((base+1) >> 2))
+		xcharset[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
 	
 	//Cache start value
 	__shared__ int start[32];
@@ -196,7 +192,7 @@ extern "C" __global__ void md4_fastKernel(int* gtarget, int* gstart, char* gsalt
 	{
 		*status = 1;
 		
-		int* po = (int*)output;
+		int* po = output;
 		switch(len / 4)
 		{
 			SaveOutput(7);
@@ -232,12 +228,10 @@ extern "C" __global__ void md4BatchKernel(int* gtarget, int* gstart, char* gsalt
 	int index = (blockDim.x * blockIdx.x) + threadIdx.x;
 	
 	//Cache charset in shmem
-	__shared__ char charset[256];
-	if(threadIdx.x < ceil((float)base / 4))
-	{
-		int* ccs = (int*)&charset[0];
-		ccs[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
-	}
+	__shared__ int xcharset[64];
+	char* charset = (char*)&xcharset[0];
+	if(threadIdx.x < ((base+1) >> 2))
+		xcharset[threadIdx.x] = tex1Dfetch(texCharset, threadIdx.x);
 	
 	//Cache start value
 	__shared__ int start[32];

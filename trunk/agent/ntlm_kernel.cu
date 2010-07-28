@@ -52,8 +52,8 @@ texture<int, 1, cudaReadModeElementType> texCharset;
 			LstartInit(lstart0, b);				\
 			/* Pack two elements into the int with null bytes in between (if we exceed length, padding will overwrite the garbage) */	\
 			buf##num = 							\
-			(charset[lstart1] << 16) | 			\
-			 charset[lstart0];					\
+			(charset[lstart1 & 0xff] << 16) | 			\
+			 charset[lstart0 & 0xff];					\
 		}
 		 
 #define LstartInit(ls, num)								\
