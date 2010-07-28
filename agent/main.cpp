@@ -135,6 +135,11 @@ bool g_bNoCPU;
 bool g_bNoGPU;
 
 /*!
+	@brief Set to true if we can only use gpu 0
+ */
+bool g_bGpuZeroOnly;
+
+/*!
 	@brief Program entry point
 	
 	@param argc Argument count
@@ -149,6 +154,7 @@ int main(int argc, char* argv[])
 		g_bNoCPU = false;
 		g_bNoGPU = false;
 		g_bTesting = false;
+		g_bGpuZeroOnly = false;
 		
 		//Check arguments
 		for(int i=1; i<argc; i++)
@@ -167,6 +173,10 @@ int main(int argc, char* argv[])
 				{
 					cout << g_version << endl;
 					return 0;
+				}
+				else if(sarg == "--gpuzero")
+				{
+					g_bGpuZeroOnly = true;
 				}
 				else
 					ThrowCustomError("Unrecognized command line argument");
@@ -228,20 +238,30 @@ int main(int argc, char* argv[])
 			//Select devices
 			vector<ComputeDevice> devices;
 			#ifdef CUDA_ENABLED
-				for(int i=0; i<gpus; i++)
+				if(g_bGpuZeroOnly)
 				{
-					//Check specs
-					Device tdev(i);
-					float gflops = static_cast<float>(tdev.GetClockRate() * 8 * 3 * tdev.GetMultiprocessorCount()) / 1000000;
-					
-					//CUDA under 50 gflops isnt worth bothering with, skip it
-					if(gflops < 50)
-						continue;
-					
 					ComputeDevice dev;
 					dev.bGPU = true;
-					dev.index = i;
+					dev.index = 0;
 					devices.push_back(dev);
+				}
+				else
+				{
+					for(int i=0; i<gpus; i++)
+					{
+						//Check specs
+						Device tdev(i);
+						float gflops = static_cast<float>(tdev.GetClockRate() * 8 * 3 * tdev.GetMultiprocessorCount()) / 1000000;
+						
+						//CUDA under 50 gflops isnt worth bothering with, skip it
+						if(gflops < 50)
+							continue;
+						
+						ComputeDevice dev;
+						dev.bGPU = true;
+						dev.index = i;
+						devices.push_back(dev);
+					}
 				}
 			#endif
 			int cpus = max(0UL, static_cast<unsigned long>(GetCpuCores() - devices.size()));

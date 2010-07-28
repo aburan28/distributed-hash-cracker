@@ -238,7 +238,7 @@ extern "C" __global__ void sha1Kernel(int* gtarget, int* gstart, char* gsalt, ch
 
 /*!
 	@brief CUDA implementation of SHA1 with batch processing support
-	Thread-per-block requirement: minimum 64
+	Thread-per-block requirement: minimum 256
 	
 	@param gtarget Target value (five ints, little endian)
 	@param gstart Start index in charset (array of 32 ints, data is left aligned, unused values are at right)
@@ -269,25 +269,12 @@ extern "C" __global__ void sha1BatchKernel(int* gtarget, int* gstart, char* gsal
 		start[threadIdx.x] = gstart[threadIdx.x];
 	
 	//Cache target value (do byte-swap here)
-	
-	__shared__ int target[5 * 128];
-	if(threadIdx.x < 64)
+	__shared__ int target[5 * 512];
+	if(threadIdx.x < hashcount)
 	{
-		int td = threadIdx.x;
-		if(td < hashcount)
-		{
-			for(int i=0; i<5; i++)
-				target[5*td + i] = bswap(gtarget[5*td + i]);
-		}
-		if(td > 64)
-		{
-			td -= 64;
-			if(td < hashcount)
-			{
-				for(int i=0; i<5; i++)
-					target[5*td + i] = bswap(gtarget[5*td + i]);
-			}
-		}
+		int tbase = (threadIdx.x * 5);
+		for(int i=0; i<5; i++)
+			target[tbase + i] = gtarget[tbase + i];
 	}
 	
 	//Wait for all cache filling to finish
