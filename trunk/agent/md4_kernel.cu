@@ -256,7 +256,6 @@ extern "C" __global__ void md4BatchKernel(int* gtarget, int* gstart, char* gsalt
 				target[tbase + i] = gtarget[tbase + i];
 		}
 	}
-
 	
 	//Wait for all cache filling to finish
 	__syncthreads();
@@ -325,23 +324,21 @@ extern "C" __global__ void md4_fastBatchKernel(int* gtarget, int* gstart, char* 
 		start[threadIdx.x] = gstart[threadIdx.x];
 	
 	//Cache target value
-	__shared__ int target[4 * 128];
-	if(threadIdx.x < 64)
+	__shared__ int target[4 * 512];
+	if(threadIdx.x < hashcount)
 	{
-		int td = threadIdx.x;
-		if(td < hashcount)
+		int tbase = (threadIdx.x << 2);
+		for(int i=0; i<4; i++)
+			target[tbase + i] = gtarget[tbase + i];
+	}
+	if(blockDim.x < hashcount)								//assumes max hashes >= 2*blockDim.x
+	{
+		int tb = threadIdx.x + blockDim.x;
+		if(tb < hashcount)
 		{
+			int tbase = (tb << 2);
 			for(int i=0; i<4; i++)
-				target[4*td + i] = gtarget[4*td + i];
-		}
-		if(td > 64)
-		{
-			td -= 64;
-			if(td < hashcount)
-			{
-				for(int i=0; i<4; i++)
-					target[4*td + i] = gtarget[4*td + i];
-			}
+				target[tbase + i] = gtarget[tbase + i];
 		}
 	}
 	
