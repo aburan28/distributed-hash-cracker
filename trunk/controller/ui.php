@@ -45,6 +45,7 @@ if($page=='')
 	$page='overview';
 	
 require_once('controller_utils.php');
+require_once('header.php');
 	
 //Set up page title
 $titles = array(
@@ -185,7 +186,10 @@ function DoQueue()
 	$rows = '';
 	
 	//Submit a new hash if requested
-	$op = $_GET['op'];
+	if(isset($_GET['op']))
+		$op = $_GET['op'];
+	else
+		$op = '';
 	if($op == 'submit')
 	{
 		$alg = $_POST['alg'];
@@ -321,7 +325,7 @@ function DoQueue()
 	while($row = mysql_fetch_object($r))
 	{
 		$time = time();
-		$rows .= '<tr id=\'' . $row->hash . '\'>';
+		$rows .= '<tr id=\'' . $row->started . '\'>';
 		$rows .= '<td><a href=\'?page=queue&op=cancel&id=' . $row->id . '\'>[Cancel]</a></td>';
 		$rows .= '<td>' . $row->algorithm . '</td>';
 		$rows .= '<td>' . $row->charset . '</td>';
