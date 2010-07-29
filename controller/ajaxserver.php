@@ -71,14 +71,14 @@ function ShowOverview()
 	$r = dbquery("SELECT * FROM `cracks` WHERE `updated` >= '$from'");
 	while($row = mysql_fetch_object($r))
 	{
-		if($row->disposition == 'a' && $row->updated == $row->started)
+		if($row->active == '1' && $row->updated == $row->started)
 		{
 			//Active crack, newly added - create new row
 			echo 'add,';
 			echo $row->id . ',';
 			echo $row->algorithm . ',';
 			echo $row->charset . ',';
-			echo $row->hash . ',';
+			echo /*$row->hash*/"&nbsp;" . ',';
 			echo $row->maxlen . ',';
 			echo $row->nextwu . ',';
 			echo date('Hi Ymd', $row->started) . ',';
@@ -86,7 +86,7 @@ function ShowOverview()
 			echo '0';
 			echo $row->priority;
 		}
-		else if($row->disposition == 'a')
+		else if($row->active == '1')
 		{
 			//Active crack, updated - update the row
 			$time = time();
@@ -94,7 +94,7 @@ function ShowOverview()
 			echo $row->id . ',';
 			echo $row->algorithm . ',';
 			echo $row->charset . ',';
-			echo $row->hash . ',';
+			echo /*$row->hash*/"&nbsp;" . ',';
 			echo $row->maxlen . ',';
 			echo $row->nextwu . ',';
 			echo date('Hi Ymd', $row->started) . ',';
@@ -103,7 +103,7 @@ function ShowOverview()
 			$frac=GetStatsPercentage($row->id);
 			echo "<img src='index.php?action=ajax&page=progress&percentage=$frac' title='$frac% complete'/>";
 		}
-		else if($row->disposition == 'c')
+		else if($row->active != '1')
 		{
 			//Crack completed - remove the row
 			echo 'delete,';
@@ -118,6 +118,7 @@ function ShowOverview()
  */
 function ShowStatsImage()
 {
+	$speed = 0;							//TODO: do this right
 	$barheight = ($speed / 15) + 1;
 	$barheight = min($barheight, 300);
 	

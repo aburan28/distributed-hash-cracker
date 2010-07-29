@@ -174,7 +174,7 @@ function GetWorkUnit()
 		//Calculate work unit size
 		$wlength = 1000000000;			//Default for GPUs
 		if($type == 'core')				
-			$wlength = 50000000;		//CPUs get less
+			$wlength = 5000000;		//CPUs get less
 		if($crack->algorithm == 'md5crypt')
 			$wlength /= 1000;			//md5crypt gets much smaller WUs
 		

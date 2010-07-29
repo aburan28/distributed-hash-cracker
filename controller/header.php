@@ -43,7 +43,10 @@ mysql_connect($dbserver, $uname, $pass) or die('DB error');
 mysql_select_db($dbname) or die('DB error');
 
 $g_dberrors = true;		//TODO: turn off in release build
-$action = $_GET['action'];
+if(isset($_GET['action']))
+	$action = $_GET['action'];
+else
+	$action = '';
 
 //TODO: implement login for hash submission
 
