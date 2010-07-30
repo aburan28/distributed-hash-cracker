@@ -117,6 +117,55 @@ unsigned int w16=0;
 		w2 = (gsalt[7] << 24) | (gsalt[6] << 16) | (gsalt[5] << 8) | (gsalt[4]);
 		w3 = 0x80;
 		break;
+		
+	case 5:
+		w1 = (w1 & 0x000000ff) | (gsalt[2] << 24) | (gsalt[1] << 16) | (gsalt[0] << 8);
+		w2 = (gsalt[6] << 24) | (gsalt[5] << 16) | (gsalt[4] << 8) | (gsalt[3]);
+		w3 = (gsalt[7]) | 0x00008000;
+		break;
+		
+	case 6:
+		w1 = (w1 & 0x0000ffff) | (gsalt[1] << 24) | (gsalt[0] << 16);
+		w2 = (gsalt[5] << 24) | (gsalt[4] << 16) | (gsalt[3] << 8) | (gsalt[2]);
+		w3 = (gsalt[7] << 8) | (gsalt[6]) | 0x00800000;
+		break;
+		
+	case 7:
+		w1 = (w1 & 0x00ffffff) | (gsalt[0] << 24);
+		w2 = (gsalt[4] << 24) | (gsalt[3] << 16) | (gsalt[2] << 8) | (gsalt[1]);
+		w3 = (gsalt[7] << 16) | (gsalt[6] << 8) | (gsalt[5]) | 0x80000000;
+		break;
+		
+	case 8:
+		w2 = (gsalt[3] << 24) | (gsalt[2] << 16) | (gsalt[1] << 8) | (gsalt[0]);
+		w3 = (gsalt[7] << 24) | (gsalt[6] << 16) | (gsalt[5] << 8) | (gsalt[4]);
+		w4 = 0x80;
+		break;
+		
+	case 9:
+		w2 = (w2 & 0x000000ff) | (gsalt[2] << 24) | (gsalt[1] << 16) | (gsalt[0] << 8);
+		w3 = (gsalt[6] << 24) | (gsalt[5] << 16) | (gsalt[4] << 8) | (gsalt[3]);
+		w4 = (gsalt[7]) | 0x00008000;
+		break;
+		
+	case 10:
+		w2 = (w2 & 0x0000ffff) | (gsalt[1] << 24) | (gsalt[0] << 16);
+		w3 = (gsalt[5] << 24) | (gsalt[4] << 16) | (gsalt[3] << 8) | (gsalt[2]);
+		w4 = (gsalt[7] << 8) | (gsalt[6]) | 0x00800000;
+		break;
+		
+	case 11:
+		w2 = (w2 & 0x00ffffff) | (gsalt[0] << 24);
+		w3 = (gsalt[4] << 24) | (gsalt[3] << 16) | (gsalt[2] << 8) | (gsalt[1]);
+		w4 = (gsalt[7] << 16) | (gsalt[6] << 8) | (gsalt[5]) | 0x80000000;
+		break;
+		
+	case 12:
+		w3 = (gsalt[3] << 24) | (gsalt[2] << 16) | (gsalt[1] << 8) | (gsalt[0]);
+		w4 = (gsalt[7] << 24) | (gsalt[6] << 16) | (gsalt[5] << 8) | (gsalt[4]);
+		w5 = 0x80;
+		break;
+
 	}
 }
 

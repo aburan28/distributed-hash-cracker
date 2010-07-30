@@ -90,6 +90,7 @@
 	<!-- 5 char -->
 	<suite device="gpu" charset="abcdefghijklmnopqrstuvwxyz" start="aaaaa" end="azzzz">
 		<test desc="MD5      (1)" alg="md5" hash="aa41efe0a1b3eeb9bf303e4561ff8392" cleartext="asdfa"/>
+		<test desc="SSHA     (1)" alg="ssha" hash="11931f2a7395fe29cf938710d1b2f10268c00c3e3132333435363738" cleartext="asdfa"/>
 	</suite>
 	
 </testvectors>
