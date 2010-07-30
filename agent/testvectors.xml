@@ -17,6 +17,8 @@
 		<test desc="NTLM     (2)" alg="ntlm" hash="c8695eedafd1168ca164daf0da0be1df" cleartext=""/>
 		<test desc="SHA-1    (1)" alg="sha1" hash="4dc7c9ec434ed06502767136789763ec11d2c4b7" cleartext="r"/>
 		<test desc="SHA-1    (2)" alg="sha1" hash="b1b3773a05c0ed0176787a4f1574ff0075f7521e" cleartext=""/>
+		<test desc="SSHA     (1)" alg="ssha" hash="3dd635a808ddb6dd4b6731f7c409d53dd4b14df23132333435363738" cleartext="a"/>
+		<test desc="SSHA     (2)" alg="ssha" hash="96503b33208bc56e1a7853a1b5f5f2ec201d6f973131313131313131" cleartext=""/>
 	</suite>
 	
 	
@@ -37,6 +39,8 @@
 		<test desc="NTLM     (2)" alg="ntlm" hash="c8695eedafd1168ca164daf0da0be1df" cleartext=""/>
 		<test desc="SHA-1    (1)" alg="sha1" hash="04affb5109a0a8874c988e11f0385f49a12efb8c" cleartext="qx"/>
 		<test desc="SHA-1    (2)" alg="sha1" hash="b1b3773a05c0ed0176787a4f1574ff0075f7521e" cleartext=""/>
+		<test desc="SSHA     (1)" alg="ssha" hash="956b6b063c76b338f27ed80adff5788c7778281a3132333435363738" cleartext="df"/>
+		<test desc="SSHA     (1)" alg="ssha" hash="3dd635a808ddb6dd4b6731f7c409d53dd4b14df23132333435363738" cleartext=""/>
 	</suite>
 	
 	
@@ -57,6 +61,8 @@
 		<test desc="NTLM     (2)" alg="ntlm" hash="c8695eedafd1168ca164daf0da0be1df" cleartext=""/>
 		<test desc="SHA-1    (1)" alg="sha1" hash="589c22335a381f122d129225f5c0ba3056ed5811" cleartext="def"/>
 		<test desc="SHA-1    (2)" alg="sha1" hash="b1b3773a05c0ed0176787a4f1574ff0075f7521e" cleartext=""/>
+		<test desc="SSHA     (1)" alg="ssha" hash="c2fdf18b1085547387b475a92a346d580bc5ceea3132333435363738" cleartext="foo"/>
+		<test desc="SSHA     (2)" alg="ssha" hash="3dd635a808ddb6dd4b6731f7c409d53dd4b14df23132333435363738" cleartext=""/>
 	</suite>
 	
 	
@@ -66,7 +72,7 @@
 		<test desc="MD5      (2)" alg="md5" hash="d8578edf8458ce06fbc5bb76a58c5ca4" cleartext=""/>
 	</suite>
 	
-	<suite device="gpu" charset="abcdefghijklmnopqrstuvwxyz" start="aaaa" end="zzzz">
+	<suite device="gpu" charset="abcdefghijklmnopqrstuvwxyz" start="naaa" end="zzzz">
 		<test desc="MD4      (1)" alg="md4" hash="db346d691d7acc4dc2625db19f9e3f52" cleartext="test"/>
 		<test desc="MD4      (2)" alg="md4" hash="eb36d0997d1ed6c8d28a66096a2f97c6" cleartext=""/>
 		<test desc="MD5      (1)" alg="md5" hash="098f6bcd4621d373cade4e832627b4f6" cleartext="test"/>
@@ -77,6 +83,8 @@
 		<test desc="NTLM     (2)" alg="ntlm" hash="c8695eedafd1168ca164daf0da0be1df" cleartext=""/>
 		<test desc="SHA-1    (1)" alg="sha1" hash="a94a8fe5ccb19ba61c4c0873d391e987982fbbd3" cleartext="test"/>
 		<test desc="SHA-1    (2)" alg="sha1" hash="b1b3773a05c0ed0176787a4f1574ff0075f7521e" cleartext=""/>
+		<test desc="SSHA     (1)" alg="ssha" hash="3bc21fd44ce4590137481f2755c0c8dbedffb56b3132333435363738" cleartext="test"/>
+		<test desc="SSHA     (2)" alg="ssha" hash="c2fdf18b1085547387b475a92a346d580bc5ceea3132333435363738" cleartext=""/>
 	</suite>
 	
 	<!-- 5 char -->

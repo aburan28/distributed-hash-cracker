@@ -89,6 +89,7 @@ void ComputeThreadProc(void* pData)
 			algs.push_back("md5crypt");
 			algs.push_back("ntlm");
 			algs.push_back("sha1");
+			algs.push_back("ssha");
 		}
 		else if(LINUX==1 && AMD64==1)			//64 bit Linux
 			algs.push_back("md5");
@@ -323,6 +324,8 @@ void DoWorkUnitOnGPU(WorkUnit& wu, Device* pDevice, CudaContext* pContext)
 	unsigned int saltlen = 1;
 	if(wu.m_salts.size() > 0)
 		saltlen = strlen(reinterpret_cast<const char*>(wu.m_salts[0]));
+	if(wu.m_algorithm == "ssha")
+		saltlen = 8;
 	if(saltlen == 0)		//No salt? Use one byte as padding
 		saltlen = 1;
 	HostMemoryBuffer hhash(hashlen * nTargetHashes);

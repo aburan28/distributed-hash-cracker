@@ -348,6 +348,8 @@ void ControllerLink::DecodeHash(
 	}
 	else if(algorithm == "sha1")
 		hashlen = 20;
+	else if(algorithm == "ssha")
+		hashlen = 28;
 	else	
 		ThrowCustomError("Unknown hash function");
 		
@@ -411,6 +413,37 @@ void ControllerLink::DecodeHash(
 			//Copy it (including the scramble pattern)
 			for(int j=0; j<3 && iOut < 16; j++)
 				hash[scramble[iOut++]] = pch[j];
+		}
+	}
+	
+	else if(algorithm == "ssha")
+	{
+		//Copy hash
+		for(unsigned int i=0; i<20; i++)
+		{
+			char test[3]=
+			{
+				text[i*2],
+				text[i*2 + 1],
+				'\0'
+			};
+			int digit;
+			sscanf(test, "%x", &digit);
+			hash[i] = digit & 0xFF;
+		}
+		
+		//Copy salt
+		for(unsigned int i=20; i<hashlen; i++)
+		{
+			char test[3]=
+			{
+				text[i*2],
+				text[i*2 + 1],
+				'\0'
+			};
+			int digit;
+			sscanf(test, "%x", &digit);
+			salt[i-20] = digit & 0xFF;
 		}
 	}
 	
