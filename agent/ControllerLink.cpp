@@ -200,6 +200,9 @@ bool ControllerLink::GetWorkUnit(WorkUnit& wu, const vector<string>& alglist)
 					case '>':
 						wu.m_charset += "`~%^&*()=+[]\\{}|;':\",./<>";
 						break;
+					case '@':
+						wu.m_charset += "!@#$%&*()";
+						break;
 					case 's':
 						wu.m_charset += ' ';
 						break;
