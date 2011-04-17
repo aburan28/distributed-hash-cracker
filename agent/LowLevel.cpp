@@ -263,7 +263,7 @@ int Device::GetMinorVersion()
  */
 unsigned int Device::GetTotalMem()
 {
-	unsigned int mem;
+	size_t mem;
 	CUresult err;
 	if(CUDA_SUCCESS != (err=cuDeviceTotalMem(&mem, m_device)))
 		ThrowCudaLLError("Failed to get CUDA device memory size", err);
