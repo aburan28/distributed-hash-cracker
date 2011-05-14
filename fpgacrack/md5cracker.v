@@ -5,7 +5,7 @@
 	@brief Top-level module for PoC cracker
 	
  */
-module md5cracker(targetA, targetB, targetC, targetD, clk, hit, done, guess);
+module md5cracker(targetA, targetB, targetC, targetD, clk, hit, done, guess, hashA, hashB, hashC, hashD);
 
 	input wire [31:0] targetA;
 	input wire [31:0] targetB;
@@ -14,6 +14,12 @@ module md5cracker(targetA, targetB, targetC, targetD, clk, hit, done, guess);
    input wire clk;
    output wire hit;
 	output wire done;
+	
+	//Debug
+	output wire[31:0] hashA;
+	output wire[31:0] hashB;
+	output wire[31:0] hashC;
+	output wire[31:0] hashD;
 	
 	output wire[127:0] guess;
 	
@@ -42,7 +48,7 @@ module md5cracker(targetA, targetB, targetC, targetD, clk, hit, done, guess);
 		
 	end
 	 
-	// Instantiate the module
+	//The guess generator
 	GuessGenerator generator (
 		 .clk(clk),
 		 .charset(charset), 
@@ -51,6 +57,16 @@ module md5cracker(targetA, targetB, targetC, targetD, clk, hit, done, guess);
 		 .guess(guess),
 		 .done(done)
 		 );
-
+		 
+	//Create the hash pipeline
+	MD5Pipeline pipe (
+		 .clk(clk), 
+		 .guess(guess), 
+		 .guesslen(guesslen), 
+		 .hashA(hashA), 
+		 .hashB(hashB), 
+		 .hashC(hashC), 
+		 .hashD(hashD)
+		 );
 
 endmodule

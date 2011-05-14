@@ -26,6 +26,7 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 	reg[8:0] charsetsize;				//length of the charset
 	reg[8:0] charsetmax;					//1 - charsetsize
 	reg[4:0] length;						//length of each guess
+	reg[4:0] lmax;							//1 - length
 	
 	reg[8:0] guesspos[15:0];	//Current guess
 	
@@ -74,8 +75,24 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 	wire[7:0] char14;
 	wire[7:0] char15;
 
-	assign guess = {	char15, char14, char13, char12, char11, char10, char09, char08,
-							char07, char06, char05, char04, char03, char02, char01, char00 };
+	//Flip guesses left to right so we can null terminate more efficiently
+	assign guess = {	char00,
+							(lmax >= 1) ? char01 : 8'd0,
+							(lmax >= 2) ? char02 : 8'd0,
+							(lmax >= 3) ? char03 : 8'd0,
+							(lmax >= 4) ? char04 : 8'd0,
+							(lmax >= 5) ? char05 : 8'd0,
+							(lmax >= 6) ? char06 : 8'd0,
+							(lmax >= 7) ? char07 : 8'd0,
+							(lmax >= 8) ? char08 : 8'd0,
+							(lmax >= 9) ? char09 : 8'd0,
+							(lmax >= 10) ? char10 : 8'd0,
+							(lmax >= 11) ? char11 : 8'd0,
+							(lmax >= 12) ? char12 : 8'd0,
+							(lmax >= 13) ? char13 : 8'd0,
+							(lmax >= 14) ? char14 : 8'd0,
+							(lmax >= 15) ? char15 : 8'd0
+							};
 		
 	//Addresses for each digit in the memory banks
 	wire[10:0] addr00;
@@ -256,6 +273,7 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 			
 			//Copy guess length
 			length <= guesslen;
+			lmax <= guesslen - 9'd1;
 			
 			//Reset current guess
 			guesspos[0] <= 9'd0;
@@ -280,6 +298,9 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 		//Sequential counting logic
 		//(carry lookahead adder)
 		else begin
+		
+			//Set "done" flag
+			done <= (guesspos[length] != 0);
 			
 			//first block has no carry in!
 			if(carries[0])
