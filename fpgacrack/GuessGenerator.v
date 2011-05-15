@@ -273,7 +273,7 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 			
 			//Copy guess length
 			length <= guesslen;
-			lmax <= guesslen - 9'd1;
+			lmax <= guesslen - 4'd1;
 			
 			//Reset current guess
 			guesspos[0] <= 9'd0;
@@ -306,68 +306,68 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 			if(carries[0])
 				guesspos[0] <= 9'd0;
 			else
-				guesspos[0] <= guesspos[0] + 1;
+				guesspos[0] <= guesspos[0] + 9'd1;
 				
 			if(carries[1])
 				guesspos[1] <= 9'd0;
 			else if(carries[0])
-				guesspos[1] <= guesspos[1] + 1;
+				guesspos[1] <= guesspos[1] + 9'd1;
 			if(carries[2])
 				guesspos[2] <= 9'd0;
 			else if(carries[1])
-				guesspos[2] <= guesspos[2] + 1;
+				guesspos[2] <= guesspos[2] + 9'd1;
 			if(carries[3])
 				guesspos[3] <= 9'd0;
 			else if(carries[2])
-				guesspos[3] <= guesspos[3] + 1;
+				guesspos[3] <= guesspos[3] + 9'd1;
 			if(carries[4])
 				guesspos[4] <= 9'd0;
 			else if(carries[3])
-				guesspos[4] <= guesspos[4] + 1;
+				guesspos[4] <= guesspos[4] + 9'd1;
 			if(carries[5])
 				guesspos[5] <= 9'd0;
 			else if(carries[4])
-				guesspos[5] <= guesspos[5] + 1;
+				guesspos[5] <= guesspos[5] + 9'd1;
 			if(carries[6])
 				guesspos[6] <= 9'd0;
 			else if(carries[5])
-				guesspos[6] <= guesspos[6] + 1;
+				guesspos[6] <= guesspos[6] + 9'd1;
 			if(carries[7])
 				guesspos[7] <= 9'd0;
 			else if(carries[6])
-				guesspos[7] <= guesspos[7] + 1;
+				guesspos[7] <= guesspos[7] + 9'd1;
 			if(carries[8])
 				guesspos[8] <= 9'd0;
 			else if(carries[7])
-				guesspos[8] <= guesspos[8] + 1;
+				guesspos[8] <= guesspos[8] + 9'd1;
 			if(carries[9])
 				guesspos[9] <= 9'd0;
 			else if(carries[8])
-				guesspos[9] <= guesspos[9] + 1;
+				guesspos[9] <= guesspos[9] + 9'd1;
 			if(carries[10])
 				guesspos[10] <= 9'd0;
 			else if(carries[9])
-				guesspos[10] <= guesspos[10] + 1;
+				guesspos[10] <= guesspos[10] + 9'd1;
 			if(carries[11])
 				guesspos[11] <= 9'd0;
 			else if(carries[10])
-				guesspos[11] <= guesspos[11] + 1;
+				guesspos[11] <= guesspos[11] + 9'd1;
 			if(carries[12])
 				guesspos[12] <= 9'd0;
 			else if(carries[11])
-				guesspos[12] <= guesspos[12] + 1;
+				guesspos[12] <= guesspos[12] + 9'd1;
 			if(carries[13])
 				guesspos[13] <= 9'd0;
 			else if(carries[12])
-				guesspos[13] <= guesspos[13] + 1;
+				guesspos[13] <= guesspos[13] + 9'd1;
 			if(carries[14])
 				guesspos[14] <= 9'd0;
 			else if(carries[13])
-				guesspos[14] <= guesspos[14] + 1;
+				guesspos[14] <= guesspos[14] + 9'd1;
 			if(carries[15])
 				guesspos[15] <= 9'd0;
 			else if(carries[14])
-				guesspos[15] <= guesspos[15] + 1;
+				guesspos[15] <= guesspos[15] + 9'd1;
 			
 		end
 		
