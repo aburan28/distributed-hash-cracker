@@ -146,11 +146,15 @@ module MD5Pipeline(clk, guess, guesslen, hashA, hashB, hashC, hashD
 		$display("END OF STEP 10:  %x, %x, %x, %x", digA[10], digB[10], digC[10], digD[10]);
 		$display("END OF STEP 11:  %x, %x, %x, %x", digA[11], digB[11], digC[11], digD[11]);
 		$display("END OF STEP 12:  %x, %x, %x, %x", digA[12], digB[12], digC[12], digD[12]);
+		$display("END OF STEP 13:  %x, %x, %x, %x", digA[13], digB[13], digC[13], digD[13]);
+		$display("END OF STEP 14:  %x, %x, %x, %x", digA[14], digB[14], digC[14], digD[14]);
+		$display("END OF STEP 15:  %x, %x, %x, %x", digA[15], digB[15], digC[15], digD[15]);
+		$display("END OF ROUND 1:  %x, %x, %x, %x", digA[16], digB[16], digC[16], digD[16]);
 		
-		hashA <= digA[12];
-		hashB <= digB[12];
-		hashC <= digC[12];
-		hashD <= digD[12];
+		hashA <= digA[16];
+		hashB <= digB[16];
+		hashC <= digC[16];
+		hashD <= digD[16];
 	end
 	
 	//FIRST ROUND
@@ -203,6 +207,22 @@ module MD5Pipeline(clk, guess, guesslen, hashA, hashB, hashC, hashD
 		assign digD[12] = digD[11];
 		assign digA[12] = digA[11]; 
 		assign digC[12] = digC[11];
+	MD5RoundF #(.s(5'd7), .p(0)) round1_12(clk, digA[12], digB[12], digC[12], digD[12], 32'h0, 32'h6b901122, digA[13]);
+		assign digB[13] = digB[12];
+		assign digC[13] = digC[12];
+		assign digD[13] = digD[12];
+	MD5RoundF #(.s(5'd12), .p(0)) round1_13(clk, digD[13], digA[13], digB[13], digC[13], 32'h0, 32'hfd987193, digD[14]);
+		assign digB[14] = digB[13];
+		assign digC[14] = digC[13];
+		assign digA[14] = digA[13]; 
+	MD5RoundF #(.s(5'd17), .p(0)) round1_14(clk, digC[14], digD[14], digA[14], digB[14], buf14[14], 32'ha679438e, digC[15]);
+		assign digD[15] = digD[14];
+		assign digA[15] = digA[14]; 
+		assign digB[15] = digB[14];
+	MD5RoundF #(.s(5'd22), .p(0)) round1_15(clk, digB[15], digC[15], digD[15], digA[15], 32'h0, 32'h49b40821, digB[16]);
+		assign digD[16] = digD[15];
+		assign digA[16] = digA[15]; 
+		assign digC[16] = digC[15];
 
 endmodule
 
