@@ -34,7 +34,6 @@ module testMD5Pipeline;
 	wire [31:0] hashB;
 	wire [31:0] hashC;
 	wire [31:0] hashD;
-	wire [31:0] buf14;
 	
 	reg ready;
 
@@ -46,8 +45,7 @@ module testMD5Pipeline;
 		.hashA(hashA), 
 		.hashB(hashB), 
 		.hashC(hashC), 
-		.hashD(hashD), 
-		.buf14(buf14)
+		.hashD(hashD)
 	);
 
 	initial begin

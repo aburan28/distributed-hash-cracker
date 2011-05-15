@@ -32,7 +32,7 @@ module md5cracker(targetA, targetB, targetC, targetD, clk, hit, done, guess, has
 	initial begin
 		reset <= 1'd1;
 		charset <= 3'd0;
-		guesslen <= 5'd2;	//2 characters
+		guesslen <= 5'd10;	//2 characters
 	end
 	
 	always @(posedge clk) begin
