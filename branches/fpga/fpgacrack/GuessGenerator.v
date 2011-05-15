@@ -18,15 +18,15 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 
 	input wire clk;
 	input wire[2:0] charset;
-	input wire[4:0] guesslen;			//max 16 chars
+	input wire[3:0] guesslen;			//max 16 chars
 	output wire[127:0] guess;			//ASCII, up to 16 characters supported
 	output reg done;
 	input wire reset;
 	
 	reg[8:0] charsetsize;				//length of the charset
 	reg[8:0] charsetmax;					//1 - charsetsize
-	reg[4:0] length;						//length of each guess
-	reg[4:0] lmax;							//1 - length
+	reg[3:0] length;						//length of each guess
+	reg[3:0] lmax;							//1 - length
 	
 	reg[8:0] guesspos[15:0];	//Current guess
 	
