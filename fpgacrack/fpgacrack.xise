@@ -97,7 +97,7 @@
     <property xil_pn:name="Custom Waveform Configuration File Behav" xil_pn:value="guessgen.wcfg" xil_pn:valueState="non-default"/>
     <property xil_pn:name="DSP Utilization Ratio" xil_pn:value="100" xil_pn:valueState="default"/>
     <property xil_pn:name="Delay Values To Be Read from SDF" xil_pn:value="Setup Time" xil_pn:valueState="default"/>
-    <property xil_pn:name="Device" xil_pn:value="xc6slx25" xil_pn:valueState="non-default"/>
+    <property xil_pn:name="Device" xil_pn:value="xc6slx16" xil_pn:valueState="non-default"/>
     <property xil_pn:name="Device Family" xil_pn:value="Spartan6" xil_pn:valueState="non-default"/>
     <property xil_pn:name="Device Speed Grade/Select ABS Minimum" xil_pn:value="-3" xil_pn:valueState="default"/>
     <property xil_pn:name="Do Not Escape Signal and Instance Names in Netlist" xil_pn:value="false" xil_pn:valueState="default"/>
@@ -153,7 +153,7 @@
     <property xil_pn:name="Generate Timegroups Section Post Trace" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Generics, Parameters" xil_pn:value="" xil_pn:valueState="default"/>
     <property xil_pn:name="Global Optimization Goal" xil_pn:value="AllClockNets" xil_pn:valueState="default"/>
-    <property xil_pn:name="Global Optimization map" xil_pn:value="Off" xil_pn:valueState="default"/>
+    <property xil_pn:name="Global Optimization map" xil_pn:value="Speed" xil_pn:valueState="non-default"/>
     <property xil_pn:name="Global Set/Reset Port Name" xil_pn:value="GSR_PORT" xil_pn:valueState="default"/>
     <property xil_pn:name="Global Tristate Port Name" xil_pn:value="GTS_PORT" xil_pn:valueState="default"/>
     <property xil_pn:name="HDL Instantiation Template Target Language" xil_pn:value="Verilog" xil_pn:valueState="default"/>
@@ -225,7 +225,7 @@
     <property xil_pn:name="Overwrite Compiled Libraries" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Pack I/O Registers into IOBs" xil_pn:value="Auto" xil_pn:valueState="default"/>
     <property xil_pn:name="Pack I/O Registers/Latches into IOBs" xil_pn:value="Off" xil_pn:valueState="default"/>
-    <property xil_pn:name="Package" xil_pn:value="fgg484" xil_pn:valueState="non-default"/>
+    <property xil_pn:name="Package" xil_pn:value="ftg256" xil_pn:valueState="non-default"/>
     <property xil_pn:name="Perform Advanced Analysis" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Perform Advanced Analysis Post Trace" xil_pn:value="false" xil_pn:valueState="default"/>
     <property xil_pn:name="Perform Timing-Driven Packing and Placement" xil_pn:value="false" xil_pn:valueState="default"/>
@@ -254,7 +254,7 @@
     <property xil_pn:name="Read Cores" xil_pn:value="true" xil_pn:valueState="default"/>
     <property xil_pn:name="Reduce Control Sets" xil_pn:value="Auto" xil_pn:valueState="default"/>
     <property xil_pn:name="Regenerate Core" xil_pn:value="Under Current Project Setting" xil_pn:valueState="default"/>
-    <property xil_pn:name="Register Balancing" xil_pn:value="Yes" xil_pn:valueState="non-default"/>
+    <property xil_pn:name="Register Balancing" xil_pn:value="No" xil_pn:valueState="default"/>
     <property xil_pn:name="Register Duplication Map" xil_pn:value="On" xil_pn:valueState="non-default"/>
     <property xil_pn:name="Register Duplication Xst" xil_pn:value="true" xil_pn:valueState="default"/>
     <property xil_pn:name="Release Write Enable (Output Events)" xil_pn:value="Default (6)" xil_pn:valueState="default"/>
@@ -315,7 +315,7 @@
     <property xil_pn:name="Timing Mode Par" xil_pn:value="Performance Evaluation" xil_pn:valueState="default"/>
     <property xil_pn:name="Top-Level Module Name in Output Netlist" xil_pn:value="" xil_pn:valueState="default"/>
     <property xil_pn:name="Top-Level Source Type" xil_pn:value="HDL" xil_pn:valueState="default"/>
-    <property xil_pn:name="Trim Unconnected Signals" xil_pn:value="false" xil_pn:valueState="non-default"/>
+    <property xil_pn:name="Trim Unconnected Signals" xil_pn:value="true" xil_pn:valueState="default"/>
     <property xil_pn:name="Tristate On Configuration Pulse Width" xil_pn:value="0" xil_pn:valueState="default"/>
     <property xil_pn:name="Unused IOB Pins" xil_pn:value="Pull Down" xil_pn:valueState="default"/>
     <property xil_pn:name="Use Clock Enable" xil_pn:value="Auto" xil_pn:valueState="default"/>
@@ -338,6 +338,7 @@
     <property xil_pn:name="Use Synchronous Reset" xil_pn:value="Auto" xil_pn:valueState="default"/>
     <property xil_pn:name="Use Synchronous Set" xil_pn:value="Auto" xil_pn:valueState="default"/>
     <property xil_pn:name="Use Synthesis Constraints File" xil_pn:value="true" xil_pn:valueState="default"/>
+    <property xil_pn:name="User Browsed Strategy Files" xil_pn:value="" xil_pn:valueState="default"/>
     <property xil_pn:name="UserID Code (8 Digit Hexadecimal)" xil_pn:value="0xFFFFFFFF" xil_pn:valueState="default"/>
     <property xil_pn:name="VCCAUX Voltage Level spartan6" xil_pn:value="2.5V" xil_pn:valueState="default"/>
     <property xil_pn:name="VHDL Source Analysis Standard" xil_pn:value="VHDL-93" xil_pn:valueState="default"/>
