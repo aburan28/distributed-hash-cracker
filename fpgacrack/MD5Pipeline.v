@@ -256,9 +256,14 @@ module MD5RoundF(clk, a, b, c, d, k, t, outa, outb, outc, outd);
 	parameter p = 0;		//true to print
 
 	//Core round function
-	wire[31:0] f;
+	reg[31:0] f;
 	wire[31:0] inner;
-	assign f = (b & c) | (~b & d);
+	initial begin
+		f <= 32'h0;
+	end
+	always @(posedge clk) begin
+		f <= (b & c) | (~b & d);
+	end
 	assign inner = a + f + k + t;
 	
 	wire[63:0] xrrotval = ({inner, inner} << s);
@@ -324,9 +329,14 @@ module MD5RoundG(clk, a, b, c, d, k, t, outa, outb, outc, outd);
 	parameter p = 0;		//true to print
 
 	//Core round function
-	wire[31:0] f;
+	reg[31:0] f;
 	wire[31:0] inner;
-	assign f = (b & d) | (~d & c);
+	initial begin
+		f <= 32'h0;
+	end
+	always @(posedge clk) begin
+		f <= (b & d) | (~d & c);
+	end
 	assign inner = a + f + k + t;
 	
 	wire[63:0] xrrotval = ({inner, inner} << s);
@@ -392,9 +402,14 @@ module MD5RoundH(clk, a, b, c, d, k, t, outa, outb, outc, outd);
 	parameter p = 0;		//true to print
 
 	//Core round function
-	wire[31:0] f;
+	reg[31:0] f;
 	wire[31:0] inner;
-	assign f = b ^ c ^ d;
+	initial begin
+		f = 32'h0;
+	end
+	always @(posedge clk) begin
+		f <= b ^ c ^ d;
+	end
 	assign inner = a + f + k + t;
 	
 	wire[63:0] xrrotval = ({inner, inner} << s);
@@ -461,9 +476,14 @@ module MD5RoundI(clk, a, b, c, d, k, t, outa, outb, outc, outd);
 	parameter p = 0;		//true to print
 
 	//Core round function
-	wire[31:0] f;
+	reg[31:0] f;
 	wire[31:0] inner;
-	assign f = c ^ (b | ~d);
+	initial begin
+		f = 32'h0;
+	end
+	always @(posedge clk) begin
+		f <= c ^ (b | ~d);
+	end
 	assign inner = a + f + k + t;
 	
 	wire[63:0] xrrotval = ({inner, inner} << s);
