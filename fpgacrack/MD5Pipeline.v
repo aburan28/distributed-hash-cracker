@@ -33,10 +33,10 @@ module MD5Pipeline(clk, guess, guesslen, hashA, hashB, hashC, hashD
 	//buf15 is always 0
 	
 	//Digest values
-	wire[31:0] digA[63:0];
-	wire[31:0] digB[63:0];
-	wire[31:0] digC[63:0];
-	wire[31:0] digD[63:0];
+	wire[31:0] digA[64:0];
+	wire[31:0] digB[64:0];
+	wire[31:0] digC[64:0];
+	wire[31:0] digD[64:0];
 	
 	//Initialize the first digest values
 	assign digA[0] = 32'h67452301;
@@ -134,13 +134,16 @@ module MD5Pipeline(clk, guess, guesslen, hashA, hashB, hashC, hashD
 	
 	//DEBUG: Copy the output
 	always @(posedge clk) begin
+		/*
 		$display("END OF ROUND 1:  %x, %x, %x, %x", digA[16], digB[16], digC[16], digD[16]);
 		$display("END OF ROUND 2:  %x, %x, %x, %x", digA[32], digB[32], digC[32], digD[32]);
-		
-		hashA <= digA[32];
-		hashB <= digB[32];
-		hashC <= digC[32];
-		hashD <= digD[32];
+		$display("END OF ROUND 3:  %x, %x, %x, %x", digA[48], digB[48], digC[48], digD[48]);
+		$display("END OF ROUND 4:  %x, %x, %x, %x", digA[64], digB[64], digC[64], digD[64]);
+		*/
+		hashA <= digA[64] + 32'h67452301;
+		hashB <= digB[64] + 32'hefcdab89;
+		hashC <= digC[64] + 32'h98badcfe;
+		hashD <= digD[64] + 32'h10325476;
 	end
 	
 	//ROUND 1
@@ -274,7 +277,138 @@ module MD5Pipeline(clk, guess, guesslen, hashA, hashB, hashC, hashD
 		assign digD[32] = digD[31];
 		assign digA[32] = digA[31]; 
 		assign digC[32] = digC[31];
-	
+		
+	//ROUND 3
+	MD5RoundH #(.s(5'd4), .p(0)) round3_0(clk, digA[32], digB[32], digC[32], digD[32], 32'h0, 32'hfffa3942, digA[33]);
+		assign digB[33] = digB[32];
+		assign digC[33] = digC[32];
+		assign digD[33] = digD[32];
+	MD5RoundH #(.s(5'd11), .p(0)) round3_1(clk, digD[33], digA[33], digB[33], digC[33], 32'h0, 32'h8771f681, digD[34]);
+		assign digB[34] = digB[33];
+		assign digC[34] = digC[33];
+		assign digA[34] = digA[33]; 
+	MD5RoundH #(.s(5'd16), .p(0)) round3_2(clk, digC[34], digD[34], digA[34], digB[34], 32'h0, 32'h6d9d6122, digC[35]);
+		assign digD[35] = digD[34];
+		assign digA[35] = digA[34]; 
+		assign digB[35] = digB[34];
+	MD5RoundH #(.s(5'd23), .p(0)) round3_3(clk, digB[35], digC[35], digD[35], digA[35], buf14[35], 32'hfde5380c, digB[36]);
+		assign digD[36] = digD[35];
+		assign digA[36] = digA[35]; 
+		assign digC[36] = digC[35];
+	MD5RoundH #(.s(5'd4), .p(0)) round3_4(clk, digA[36], digB[36], digC[36], digD[36], buf1[37], 32'ha4beea44, digA[37]);
+		assign digB[37] = digB[36];
+		assign digC[37] = digC[36];
+		assign digD[37] = digD[36];
+	MD5RoundH #(.s(5'd11), .p(0)) round3_5(clk, digD[37], digA[37], digB[37], digC[37], 32'h0, 32'h4bdecfa9, digD[38]);
+		assign digB[38] = digB[37];
+		assign digC[38] = digC[37];
+		assign digA[38] = digA[37]; 
+	MD5RoundH #(.s(5'd16), .p(0)) round3_6(clk, digC[38], digD[38], digA[38], digB[38], 32'h0, 32'hf6bb4b60, digC[39]);
+		assign digD[39] = digD[38];
+		assign digA[39] = digA[38]; 
+		assign digB[39] = digB[38];
+	MD5RoundH #(.s(5'd23), .p(0)) round3_7(clk, digB[39], digC[39], digD[39], digA[39], 32'h0, 32'hbebfbc70, digB[40]);
+		assign digD[40] = digD[39];
+		assign digA[40] = digA[39]; 
+		assign digC[40] = digC[39];
+	MD5RoundH #(.s(5'd4), .p(0)) round3_8(clk, digA[40], digB[40], digC[40], digD[40], 32'h0, 32'h289b7ec6, digA[41]);
+		assign digB[41] = digB[40];
+		assign digC[41] = digC[40];
+		assign digD[41] = digD[40];
+	MD5RoundH #(.s(5'd11), .p(0)) round3_9(clk, digD[41], digA[41], digB[41], digC[41], buf0[41], 32'heaa127fa, digD[42]);
+		assign digB[42] = digB[41];
+		assign digC[42] = digC[41];
+		assign digA[42] = digA[41]; 
+	MD5RoundH #(.s(5'd16), .p(0)) round3_10(clk, digC[42], digD[42], digA[42], digB[42], buf3[42], 32'hd4ef3085, digC[43]);
+		assign digD[43] = digD[42];
+		assign digA[43] = digA[42]; 
+		assign digB[43] = digB[42];
+	MD5RoundH #(.s(5'd23), .p(0)) round3_11(clk, digB[43], digC[43], digD[43], digA[43], 32'h0, 32'h04881d05, digB[44]);
+		assign digD[44] = digD[43];
+		assign digA[44] = digA[43]; 
+		assign digC[44] = digC[43];
+	MD5RoundH #(.s(5'd4), .p(0)) round3_12(clk, digA[44], digB[44], digC[44], digD[44], 32'h0, 32'hd9d4d039, digA[45]);
+		assign digB[45] = digB[44];
+		assign digC[45] = digC[44];
+		assign digD[45] = digD[44];
+	MD5RoundH #(.s(5'd11), .p(0)) round3_13(clk, digD[45], digA[45], digB[45], digC[45], 32'h0, 32'he6db99e5, digD[46]);
+		assign digB[46] = digB[45];
+		assign digC[46] = digC[45];
+		assign digA[46] = digA[45]; 
+	MD5RoundH #(.s(5'd16), .p(0)) round3_14(clk, digC[46], digD[46], digA[46], digB[46], 32'h0, 32'h1fa27cf8, digC[47]);
+		assign digD[47] = digD[46];
+		assign digA[47] = digA[46]; 
+		assign digB[47] = digB[46];
+	MD5RoundH #(.s(5'd23), .p(0)) round3_15(clk, digB[47], digC[47], digD[47], digA[47], buf2[47], 32'hc4ac5665, digB[48]);
+		assign digD[48] = digD[47];
+		assign digA[48] = digA[47]; 
+		assign digC[48] = digC[47];
+		
+	//ROUND 4
+	MD5RoundI #(.s(5'd6), .p(0)) round4_0(clk, digA[48], digB[48], digC[48], digD[48], buf0[48], 32'hf4292244, digA[49]);
+		assign digB[49] = digB[48];
+		assign digC[49] = digC[48];
+		assign digD[49] = digD[48];
+	MD5RoundI #(.s(5'd10), .p(0)) round4_1(clk, digD[49], digA[49], digB[49], digC[49], 32'h0, 32'h432aff97, digD[50]);
+		assign digB[50] = digB[49];
+		assign digC[50] = digC[49];
+		assign digA[50] = digA[49]; 
+	MD5RoundI #(.s(5'd15), .p(0)) round4_2(clk, digC[50], digD[50], digA[50], digB[50], buf14[50], 32'hab9423a7, digC[51]);
+		assign digD[51] = digD[50];
+		assign digA[51] = digA[50]; 
+		assign digB[51] = digB[50];
+	MD5RoundI #(.s(5'd21), .p(0)) round4_3(clk, digB[51], digC[51], digD[51], digA[51], 32'h0, 32'hfc93a039, digB[52]);
+		assign digD[52] = digD[51];
+		assign digA[52] = digA[51]; 
+		assign digC[52] = digC[51];	
+	MD5RoundI #(.s(5'd6), .p(0)) round4_4(clk, digA[52], digB[52], digC[52], digD[52], 32'h0, 32'h655b59c3, digA[53]);
+		assign digB[53] = digB[52];
+		assign digC[53] = digC[52];
+		assign digD[53] = digD[52];
+	MD5RoundI #(.s(5'd10), .p(0)) round4_5(clk, digD[53], digA[53], digB[53], digC[53], buf3[53], 32'h8f0ccc92, digD[54]);
+		assign digB[54] = digB[53];
+		assign digC[54] = digC[53];
+		assign digA[54] = digA[53]; 
+	MD5RoundI #(.s(5'd15), .p(0)) round4_6(clk, digC[54], digD[54], digA[54], digB[54], 32'h0, 32'hffeff47d, digC[55]);
+		assign digD[55] = digD[54];
+		assign digA[55] = digA[54]; 
+		assign digB[55] = digB[54];
+	MD5RoundI #(.s(5'd21), .p(0)) round4_7(clk, digB[55], digC[55], digD[55], digA[55], buf1[55], 32'h85845dd1, digB[56]);
+		assign digD[56] = digD[55];
+		assign digA[56] = digA[55]; 
+		assign digC[56] = digC[55];
+	MD5RoundI #(.s(5'd6), .p(0)) round4_8(clk, digA[56], digB[56], digC[56], digD[56], 32'h0, 32'h6fa87e4f, digA[57]);
+		assign digB[57] = digB[56];
+		assign digC[57] = digC[56];
+		assign digD[57] = digD[56];
+	MD5RoundI #(.s(5'd10), .p(0)) round4_9(clk, digD[57], digA[57], digB[57], digC[57], 32'h0, 32'hfe2ce6e0, digD[58]);
+		assign digB[58] = digB[57];
+		assign digC[58] = digC[57];
+		assign digA[58] = digA[57]; 
+	MD5RoundI #(.s(5'd15), .p(0)) round4_10(clk, digC[58], digD[58], digA[58], digB[58], 32'h0, 32'ha3014314, digC[59]);
+		assign digD[59] = digD[58];
+		assign digA[59] = digA[58]; 
+		assign digB[59] = digB[58];
+	MD5RoundI #(.s(5'd21), .p(0)) round4_11(clk, digB[59], digC[59], digD[59], digA[59], 32'h0, 32'h4e0811a1, digB[60]);
+		assign digD[60] = digD[59];
+		assign digA[60] = digA[59]; 
+		assign digC[60] = digC[59];
+	MD5RoundI #(.s(5'd6), .p(0)) round4_12(clk, digA[60], digB[60], digC[60], digD[60], 32'h0, 32'hf7537e82, digA[61]);
+		assign digB[61] = digB[60];
+		assign digC[61] = digC[60];
+		assign digD[61] = digD[60];
+	MD5RoundI #(.s(5'd10), .p(0)) round4_13(clk, digD[61], digA[61], digB[61], digC[61], 32'h0, 32'hbd3af235, digD[62]);
+		assign digB[62] = digB[61];
+		assign digC[62] = digC[61];
+		assign digA[62] = digA[61]; 
+	MD5RoundI #(.s(5'd15), .p(0)) round4_14(clk, digC[62], digD[62], digA[62], digB[62], buf2[62], 32'h2ad7d2bb, digC[63]);
+		assign digD[63] = digD[62];
+		assign digA[63] = digA[62]; 
+		assign digB[63] = digB[62];
+	MD5RoundI #(.s(5'd21), .p(0)) round4_15(clk, digB[63], digC[63], digD[63], digA[63], 32'h0, 32'heb86d391, digB[64]);
+		assign digD[64] = digD[63];
+		assign digA[64] = digA[63]; 
+		assign digC[64] = digC[63];		
 
 endmodule
 
@@ -370,6 +504,122 @@ module MD5RoundG(clk, a, b, c, d, k, t, out);
 	wire[31:0] f;
 	wire[31:0] inner;
 	assign f = (b & d) | (~d & c);
+	assign inner = a + f + k + t;
+	
+	wire[63:0] xrrotval = ({inner, inner} << s);
+	wire[31:0] rrotval = xrrotval[63:32];
+	
+	//"Funnel shift" for left rotate
+	always @(posedge clk) begin
+		if(p) begin
+			$display("------");
+			$display("  A = %x", a);
+			$display("  B = %x", b);
+			$display("  C = %x", c);
+			$display("  D = %x", d);
+			$display("  X = %x", k);
+			$display("  T = %x", t);
+			$display("  fval = %x", f);
+			$display("  rotval = %x", inner);
+			$display("  rrotval = %x", rrotval);
+		end
+		out <= b + rrotval;
+	end
+	
+endmodule
+
+/**
+	@brief Does an H round
+	
+	@param clk		Clock
+	@param a			Current A word
+	@param b			Current B word
+	@param c			Current C word
+	@param d			Current D word
+	@param k			Word #K from the message
+	@param t			Input constant T
+	
+	@param s			Shift amount
+ */
+module MD5RoundH(clk, a, b, c, d, k, t, out);
+	input wire clk;
+	input wire[31:0] a;
+	input wire[31:0] b;
+	input wire[31:0] c;
+	input wire[31:0] d;
+	input wire[31:0] k;
+	input wire[31:0] t;
+	output reg[31:0] out;
+	
+	initial begin
+		out <= 32'd0;
+	end
+	
+	parameter s = 7;		//shift value
+	parameter p = 0;		//true to print
+
+	//Core round function
+	wire[31:0] f;
+	wire[31:0] inner;
+	assign f = b ^ c ^ d;
+	assign inner = a + f + k + t;
+	
+	wire[63:0] xrrotval = ({inner, inner} << s);
+	wire[31:0] rrotval = xrrotval[63:32];
+	
+	//"Funnel shift" for left rotate
+	always @(posedge clk) begin
+		if(p) begin
+			$display("------");
+			$display("  A = %x", a);
+			$display("  B = %x", b);
+			$display("  C = %x", c);
+			$display("  D = %x", d);
+			$display("  X = %x", k);
+			$display("  T = %x", t);
+			$display("  fval = %x", f);
+			$display("  rotval = %x", inner);
+			$display("  rrotval = %x", rrotval);
+		end
+		out <= b + rrotval;
+	end
+	
+endmodule
+
+/**
+	@brief Does an I round
+	
+	@param clk		Clock
+	@param a			Current A word
+	@param b			Current B word
+	@param c			Current C word
+	@param d			Current D word
+	@param k			Word #K from the message
+	@param t			Input constant T
+	
+	@param s			Shift amount
+ */
+module MD5RoundI(clk, a, b, c, d, k, t, out);
+	input wire clk;
+	input wire[31:0] a;
+	input wire[31:0] b;
+	input wire[31:0] c;
+	input wire[31:0] d;
+	input wire[31:0] k;
+	input wire[31:0] t;
+	output reg[31:0] out;
+	
+	initial begin
+		out <= 32'd0;
+	end
+	
+	parameter s = 7;		//shift value
+	parameter p = 0;		//true to print
+
+	//Core round function
+	wire[31:0] f;
+	wire[31:0] inner;
+	assign f = c ^ (b | ~d);
 	assign inner = a + f + k + t;
 	
 	wire[63:0] xrrotval = ({inner, inner} << s);
