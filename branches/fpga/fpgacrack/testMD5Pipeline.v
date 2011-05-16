@@ -61,7 +61,7 @@ module testMD5Pipeline;
 		guess = 128'h61626364000000000000000000000000;
 		guesslen = 3;
 		clk = 1;
-		#10;
+		#5;
 		clk = 0;
 		  
 		ready = 1;
@@ -71,10 +71,10 @@ module testMD5Pipeline;
 	always begin
 		if(ready)
 			clk = 0;
-		#10;
+		#5;
 		if(ready)
 			clk = 1;
-		#10;
+		#5;
 	end
       
 endmodule
