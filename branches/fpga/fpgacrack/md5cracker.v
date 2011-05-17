@@ -5,9 +5,9 @@
 	@brief Top-level module for PoC cracker
 	
  */
-module md5cracker(/*targetA, targetB, targetC, targetD,*/ clk, hit, done, reset, charset, guesslen,
+module md5cracker(/*targetA, targetB, targetC, targetD,*/ clk, hit, done, reset, charset, guesslen
 	//debug stuff
-	hashA, hashB, hashC, hashD
+	/*hashA, hashB, hashC, hashD*/
 	);
 
 	/*
@@ -21,10 +21,10 @@ module md5cracker(/*targetA, targetB, targetC, targetD,*/ clk, hit, done, reset,
 	output wire done;
 	
 	//Debug
-	output wire[31:0] hashA;
-	output wire[31:0] hashB;
-	output wire[31:0] hashC;
-	output wire[31:0] hashD;
+	wire[31:0] hashA;
+	wire[31:0] hashB;
+	wire[31:0] hashC;
+	wire[31:0] hashD;
 	wire[127:0] guess;
 	//synthesis attribute s of hashA is yes;
 	//synthesis attribute s of hashB is yes;
@@ -36,13 +36,12 @@ module md5cracker(/*targetA, targetB, targetC, targetD,*/ clk, hit, done, reset,
 	input wire reset;
 	input wire[2:0] charset;
 	input wire[3:0] guesslen;
-	
- 
+
 	//The guess generator
 	GuessGenerator generator (
 		 .clk(clk),
 		 .charset(charset), 
-		 .guesslen(guesslen), 
+		// .guesslen(guesslen), 
 		 .reset(reset), 
 		 .guess(guess),
 		 .done(done)
@@ -58,5 +57,7 @@ module md5cracker(/*targetA, targetB, targetC, targetD,*/ clk, hit, done, reset,
 		 .hashC(hashC), 
 		 .hashD(hashD)
 		 );
+		 
+	assign hit = (hashA == 32'hdda9b9a6) && (hashB == 32'h72aff2e0) && (hashC == 32'he396856b) && (hashD == 32'ha1051895);
 
 endmodule
