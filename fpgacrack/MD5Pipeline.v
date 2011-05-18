@@ -139,16 +139,10 @@ module MD5Pipeline(clk, guess, guesslen, hashA, hashB, hashC, hashD
 		//$display("END OF ROUND 2:  %x, %x, %x, %x", digA[32], digB[32], digC[32], digD[32]);
 		//$display("END OF ROUND 3:  %x, %x, %x, %x", digA[48], digB[48], digC[48], digD[48]);
 		//$display("END OF ROUND 4:  %x, %x, %x, %x", digA[64], digB[64], digC[64], digD[64]);
-		/*
 		hashA <= digA[64] + 32'h67452301;
 		hashB <= digB[64] + 32'hefcdab89;
 		hashC <= digC[64] + 32'h98badcfe;
 		hashD <= digD[64] + 32'h10325476;
-		*/
-		hashA <= digA[16];
-		hashB <= digB[16];
-		hashC <= digC[16];
-		hashD <= digD[16];
 	end
 	
 	//ROUND 1
@@ -169,7 +163,6 @@ module MD5Pipeline(clk, guess, guesslen, hashA, hashB, hashC, hashD
 	MD5RoundF #(.s(5'd17), .p(0)) round1_14(clk, digC[14], digD[14], digA[14], digB[14], buf14[14], 32'ha679438e, digC[15], digD[15], digA[15], digB[15]);
 	MD5RoundF #(.s(5'd22), .p(0)) round1_15(clk, digB[15], digC[15], digD[15], digA[15], 32'h0,		32'h49b40821, digB[16], digC[16], digD[16], digA[16]);
 	
-	/*
 	//ROUND 2
 	MD5RoundG #(.s(5'd5), .p(0))	round2_0(clk, digA[16], digB[16], digC[16], digD[16], buf1[16],	32'hf61e2562, digA[17], digB[17], digC[17], digD[17]);
 	MD5RoundG #(.s(5'd9), .p(0)) 	round2_1(clk, digD[17], digA[17], digB[17], digC[17], 32'h0,		32'hc040b340, digD[18], digA[18], digB[18], digC[18]);
@@ -223,7 +216,6 @@ module MD5Pipeline(clk, guess, guesslen, hashA, hashB, hashC, hashD
 	MD5RoundI #(.s(5'd10), .p(0)) round4_13(clk, digD[61], digA[61], digB[61], digC[61], 32'h0,		32'hbd3af235, digD[62], digA[62], digB[62], digC[62]);
 	MD5RoundI #(.s(5'd15), .p(0)) round4_14(clk, digC[62], digD[62], digA[62], digB[62], buf2[62],	32'h2ad7d2bb, digC[63], digD[63], digA[63], digB[63]);
 	MD5RoundI #(.s(5'd21), .p(0)) round4_15(clk, digB[63], digC[63], digD[63], digA[63], 32'h0,		32'heb86d391, digB[64], digC[64], digD[64], digA[64]);
-	*/
 
 endmodule
 
@@ -362,11 +354,17 @@ module MD5RoundG(clk, a, b, c, d, k, t, outa, outb, outc, outd);
 		left <= a + f;
 		right <= k + t;
 	end
+	assign inner = left + right;
+	wire[63:0] xrrotval = ({inner, inner} << s);
+	reg[31:0] rrotval;
+	initial begin
+		rrotval <= 32'h0;
+	end
+	always @(posedge clk) begin
+		rrotval <= xrrotval[63:32];
+	end
 	
 	assign inner = left + right;
-	
-	wire[63:0] xrrotval = ({inner, inner} << s);
-	wire[31:0] rrotval = xrrotval[63:32];
 	
 	//"Funnel shift" for left rotate
 	always @(posedge clk) begin
@@ -433,9 +431,9 @@ module MD5RoundH(clk, a, b, c, d, k, t, outa, outb, outc, outd);
 	reg[31:0] right;
 	wire[31:0] inner;
 	initial begin
-		f = 32'h0;
-		left = 32'h0;
-		right = 32'h0;
+		f <= 32'h0;
+		left <= 32'h0;
+		right <= 32'h0;
 	end
 	always @(posedge clk) begin
 		f <= b ^ c ^ d;
@@ -443,9 +441,14 @@ module MD5RoundH(clk, a, b, c, d, k, t, outa, outb, outc, outd);
 		right <= k + t;
 	end
 	assign inner = left + right;
-	
 	wire[63:0] xrrotval = ({inner, inner} << s);
-	wire[31:0] rrotval = xrrotval[63:32];
+	reg[31:0] rrotval;
+	initial begin
+		rrotval <= 32'h0;
+	end
+	always @(posedge clk) begin
+		rrotval <= xrrotval[63:32];
+	end
 	
 	//"Funnel shift" for left rotate
 	always @(posedge clk) begin
@@ -513,9 +516,9 @@ module MD5RoundI(clk, a, b, c, d, k, t, outa, outb, outc, outd);
 	reg[31:0] right;
 	wire[31:0] inner;
 	initial begin
-		f = 32'h0;
-		left = 32'h0;
-		right = 32'h0;
+		f <= 32'h0;
+		left <= 32'h0;
+		right <= 32'h0;
 	end
 	always @(posedge clk) begin
 		f <= c ^ (b | ~d);
@@ -523,10 +526,15 @@ module MD5RoundI(clk, a, b, c, d, k, t, outa, outb, outc, outd);
 		right <= k + t;
 	end
 	assign inner = left + right;
-	
 	wire[63:0] xrrotval = ({inner, inner} << s);
-	wire[31:0] rrotval = xrrotval[63:32];
-	
+	reg[31:0] rrotval;
+	initial begin
+		rrotval <= 32'h0;
+	end
+	always @(posedge clk) begin
+		rrotval <= xrrotval[63:32];
+	end
+
 	//"Funnel shift" for left rotate
 	always @(posedge clk) begin
 		if(p) begin
