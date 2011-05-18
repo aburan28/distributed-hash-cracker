@@ -23,22 +23,6 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 	output reg done;
 	input wire reset;
 	
-	initial begin
-		guess = 128'h0;
-	end
-	
-	always @(posedge clk) begin
-		guess <= guess + 128'h1;
-	end
-
-/*
-	input wire clk;
-	input wire[2:0] charset;
-	input wire[3:0] guesslen;			//max 16 chars
-	output wire[127:0] guess;			//ASCII, up to 16 characters supported
-	output reg done;
-	input wire reset;
-	
 	reg[8:0] charsetsize;				//length of the charset
 	reg[8:0] charsetmax;					//1 - charsetsize
 	reg[3:0] length;						//length of each guess
@@ -92,7 +76,11 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 	wire[7:0] char15;
 
 	//Flip guesses left to right so we can null terminate more efficiently
-	assign guess = {	char00,
+	initial begin
+		guess <= 128'h0;
+	end
+	always @(posedge clk) begin
+		guess <= {	char00,
 							(lmax >= 1) ? char01 : 8'd0,
 							(lmax >= 2) ? char02 : 8'd0,
 							(lmax >= 3) ? char03 : 8'd0,
@@ -109,42 +97,63 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 							(lmax >= 14) ? char14 : 8'd0,
 							(lmax >= 15) ? char15 : 8'd0
 							};
+	end
 		
 	//Addresses for each digit in the memory banks
-	wire[10:0] addr00;
-	wire[10:0] addr01;
-	wire[10:0] addr02;
-	wire[10:0] addr03;
-	wire[10:0] addr04;
-	wire[10:0] addr05;
-	wire[10:0] addr06;
-	wire[10:0] addr07;
-	wire[10:0] addr08;
-	wire[10:0] addr09;
-	wire[10:0] addr10;
-	wire[10:0] addr11;
-	wire[10:0] addr12;
-	wire[10:0] addr13;
-	wire[10:0] addr14;
-	wire[10:0] addr15;
+	reg[10:0] addr00;
+	reg[10:0] addr01;
+	reg[10:0] addr02;
+	reg[10:0] addr03;
+	reg[10:0] addr04;
+	reg[10:0] addr05;
+	reg[10:0] addr06;
+	reg[10:0] addr07;
+	reg[10:0] addr08;
+	reg[10:0] addr09;
+	reg[10:0] addr10;
+	reg[10:0] addr11;
+	reg[10:0] addr12;
+	reg[10:0] addr13;
+	reg[10:0] addr14;
+	reg[10:0] addr15;
+	initial begin
+		addr00 <= 11'h0;
+		addr01 <= 11'h0;
+		addr02 <= 11'h0;
+		addr03 <= 11'h0;
+		addr04 <= 11'h0;
+		addr05 <= 11'h0;
+		addr06 <= 11'h0;
+		addr07 <= 11'h0;
+		addr08 <= 11'h0;
+		addr09 <= 11'h0;
+		addr10 <= 11'h0;
+		addr11 <= 11'h0;
+		addr12 <= 11'h0;
+		addr13 <= 11'h0;
+		addr14 <= 11'h0;
+		addr15 <= 11'h0;
+	end
 	
 	//High order bits choose the charset, the rest are the digit
-	assign addr00 = {charset, guesspos[16'd0][7:0]};
-	assign addr01 = {charset, guesspos[16'd1][7:0]};
-	assign addr02 = {charset, guesspos[16'd2][7:0]};
-	assign addr03 = {charset, guesspos[16'd3][7:0]};
-	assign addr04 = {charset, guesspos[16'd4][7:0]};
-	assign addr05 = {charset, guesspos[16'd5][7:0]};
-	assign addr06 = {charset, guesspos[16'd6][7:0]};
-	assign addr07 = {charset, guesspos[16'd7][7:0]};
-	assign addr08 = {charset, guesspos[16'd8][7:0]};
-	assign addr09 = {charset, guesspos[16'd9][7:0]};
-	assign addr10 = {charset, guesspos[16'd10][7:0]};
-	assign addr11 = {charset, guesspos[16'd11][7:0]};
-	assign addr12 = {charset, guesspos[16'd12][7:0]};
-	assign addr13 = {charset, guesspos[16'd13][7:0]};
-	assign addr14 = {charset, guesspos[16'd14][7:0]};
-	assign addr15 = {charset, guesspos[16'd15][7:0]};
+	always @(posedge clk) begin
+		addr00 <= {charset, guesspos[16'd0][7:0]};
+		addr01 <= {charset, guesspos[16'd1][7:0]};
+		addr02 <= {charset, guesspos[16'd2][7:0]};
+		addr03 <= {charset, guesspos[16'd3][7:0]};
+		addr04 <= {charset, guesspos[16'd4][7:0]};
+		addr05 <= {charset, guesspos[16'd5][7:0]};
+		addr06 <= {charset, guesspos[16'd6][7:0]};
+		addr07 <= {charset, guesspos[16'd7][7:0]};
+		addr08 <= {charset, guesspos[16'd8][7:0]};
+		addr09 <= {charset, guesspos[16'd9][7:0]};
+		addr10 <= {charset, guesspos[16'd10][7:0]};
+		addr11 <= {charset, guesspos[16'd11][7:0]};
+		addr12 <= {charset, guesspos[16'd12][7:0]};
+		addr13 <= {charset, guesspos[16'd13][7:0]};
+		addr14 <= {charset, guesspos[16'd14][7:0]};
+		addr15 <= {charset, guesspos[16'd15][7:0]};
+	end
 	
 	//Overflow flags for carry computation
 	//Let K be the max value of a digit.
@@ -168,104 +177,124 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 	assign overflows[15] = (guesspos[16'd15] == charsetmax); 
 	
 	//Carry computation
-	wire carries[15:0];
-	assign carries[0] =	overflows[0];
-	assign carries[1] =	overflows[0] && overflows[1];
-	assign carries[2] =	overflows[0] && overflows[1] && overflows[2];
-	assign carries[3] =	overflows[0] && overflows[1] && overflows[2] && overflows[3];
-	assign carries[4] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4];
-	assign carries[5] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5];
-	assign carries[6] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5] && overflows[6];
-	assign carries[7] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5] && overflows[6] && overflows[7];
-	assign carries[8] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
-								overflows[8];
-	assign carries[9] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
-								overflows[8] && overflows[9];
-	assign carries[10] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
-								overflows[8] && overflows[9] && overflows[10];
-	assign carries[11] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
-								overflows[8] && overflows[9] && overflows[10] && overflows[11];
-	assign carries[12] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
-								overflows[8] && overflows[9] && overflows[10] && overflows[11] &&
-								overflows[12];
-	assign carries[13] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
-								overflows[8] && overflows[9] && overflows[10] && overflows[11] &&
-								overflows[12] && overflows[13];
-	assign carries[14] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
-								overflows[8] && overflows[9] && overflows[10] && overflows[11] &&
-								overflows[12] && overflows[13] && overflows[14];
-	assign carries[15] =	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
-								overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
-								overflows[8] && overflows[9] && overflows[10] && overflows[11] &&
-								overflows[12] && overflows[13] && overflows[15];
+	reg carries[15:0];
+	initial begin
+		carries[0] = 1'b0;
+		carries[1] = 1'b0;
+		carries[2] = 1'b0;
+		carries[3] = 1'b0;
+		carries[4] = 1'b0;
+		carries[5] = 1'b0;
+		carries[6] = 1'b0;
+		carries[7] = 1'b0;
+		carries[8] = 1'b0;
+		carries[9] = 1'b0;
+		carries[10] = 1'b0;
+		carries[11] = 1'b0;
+		carries[12] = 1'b0;
+		carries[13] = 1'b0;
+		carries[14] = 1'b0;
+		carries[15] = 1'b0;
+	end
+	always @(posedge clk) begin
+		carries[0] <=	overflows[0];
+		carries[1] <=	overflows[0] && overflows[1];
+		carries[2] <=	overflows[0] && overflows[1] && overflows[2];
+		carries[3] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3];
+		carries[4] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4];
+		carries[5] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5];
+		carries[6] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5] && overflows[6];
+		carries[7] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5] && overflows[6] && overflows[7];
+		carries[8] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
+									overflows[8];
+		carries[9] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
+									overflows[8] && overflows[9];
+		carries[10] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
+									overflows[8] && overflows[9] && overflows[10];
+		carries[11] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
+									overflows[8] && overflows[9] && overflows[10] && overflows[11];
+		carries[12] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
+									overflows[8] && overflows[9] && overflows[10] && overflows[11] &&
+									overflows[12];
+		carries[13] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
+									overflows[8] && overflows[9] && overflows[10] && overflows[11] &&
+									overflows[12] && overflows[13];
+		carries[14] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
+									overflows[8] && overflows[9] && overflows[10] && overflows[11] &&
+									overflows[12] && overflows[13] && overflows[14];
+		carries[15] <=	overflows[0] && overflows[1] && overflows[2] && overflows[3] &&
+									overflows[4] && overflows[5] && overflows[6] && overflows[7] &&
+									overflows[8] && overflows[9] && overflows[10] && overflows[11] &&
+									overflows[12] && overflows[13] && overflows[15];
+	end
 
 	
 	//Charset decoder tables
 	CharsetTable Digits_00_01 (
 		.clka(clk),
+		.clkb(clk),
 		.addra(addr00),
 		.douta(char00),
-		.clkb(clk),
 		.addrb(addr01),
 		.doutb(char01));
 	CharsetTable Digits_02_03 (
 		.clka(clk),
+		.clkb(clk),
 		.addra(addr02),
 		.douta(char02),
-		.clkb(clk),
 		.addrb(addr03),
 		.doutb(char03));
 	CharsetTable Digits_04_05 (
 		.clka(clk),
+		.clkb(clk),
 		.addra(addr04),
 		.douta(char04),
-		.clkb(clk),
 		.addrb(addr05),
 		.doutb(char05));
 	CharsetTable Digits_06_07 (
 		.clka(clk),
+		.clkb(clk),
 		.addra(addr06),
 		.douta(char06),
-		.clkb(clk),
 		.addrb(addr07),
 		.doutb(char07));
 	CharsetTable Digits_08_09 (
 		.clka(clk),
+		.clkb(clk),
 		.addra(addr08),
 		.douta(char08),
-		.clkb(clk),
 		.addrb(addr09),
 		.doutb(char09));
 	CharsetTable Digits_10_11 (
 		.clka(clk),
+		.clkb(clk),
 		.addra(addr10),
 		.douta(char10),
-		.clkb(clk),
 		.addrb(addr11),
 		.doutb(char11));
 	CharsetTable Digits_12_13 (
 		.clka(clk),
+		.clkb(clk),
 		.addra(addr12),
 		.douta(char12),
-		.clkb(clk),
 		.addrb(addr13),
 		.doutb(char13));
 	CharsetTable Digits_14_15 (
 		.clka(clk),
+		.clkb(clk),
 		.addra(addr14),
 		.douta(char14),
-		.clkb(clk),
 		.addrb(addr15),
 		.doutb(char15));
 	
@@ -388,5 +417,5 @@ module GuessGenerator(clk, charset, guesslen, reset, guess, done
 		end
 		
 	end
-*/
+
 endmodule

@@ -26,11 +26,6 @@ module md5cracker(/*targetA, targetB, targetC, targetD,*/ clk, hit, done, reset,
 	wire[31:0] hashC;
 	wire[31:0] hashD;
 	wire[127:0] guess;
-	//synthesis attribute s of hashA is yes;
-	//synthesis attribute s of hashB is yes;
-	//synthesis attribute s of hashC is yes;
-	//synthesis attribute s of hashD is yes;
-	//synthesis attribute s of guess is yes;
 	
 	//Inputs for guess generation
 	input wire reset;
@@ -41,7 +36,7 @@ module md5cracker(/*targetA, targetB, targetC, targetD,*/ clk, hit, done, reset,
 	GuessGenerator generator (
 		 .clk(clk),
 		 .charset(charset), 
-		// .guesslen(guesslen), 
+		 .guesslen(guesslen), 
 		 .reset(reset), 
 		 .guess(guess),
 		 .done(done)
@@ -58,6 +53,6 @@ module md5cracker(/*targetA, targetB, targetC, targetD,*/ clk, hit, done, reset,
 		 .hashD(hashD)
 		 );
 		 
-	assign hit = (hashA == 32'hdda9b9a6) && (hashB == 32'h72aff2e0) && (hashC == 32'he396856b) && (hashD == 32'ha1051895);
+	assign hit = (hashA == 32'h98500190) && (hashB == 32'hb04fd23c) && (hashC == 32'h7d3f96d6) && (hashD == 32'h727fe128);
 
 endmodule
